@@ -1,0 +1,10 @@
+.git
+.env
+bin
+coverage.out
+*.log
+PRD.md
+storage/uploads/*
+!storage/uploads/.gitkeep
+!storage/uploads/candidates/.gitkeep
+!storage/uploads/school/.gitkeep
