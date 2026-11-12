@@ -55,11 +55,13 @@ func (h *Hub) NewClient(conn *websocket.Conn, adminID, schoolID, electionID int6
 func (h *Hub) Register(c *Client) bool {
 	h.mu.Lock()
 	defer h.mu.Unlock()
-	if len(h.clients) >= h.maxClients || h.perAdmin[c.AdminID] >= h.maxPerAdmin {
+	if len(h.clients) >= h.maxClients || (c.AdminID != 0 && h.perAdmin[c.AdminID] >= h.maxPerAdmin) {
 		return false
 	}
 	h.clients[c] = struct{}{}
-	h.perAdmin[c.AdminID]++
+	if c.AdminID != 0 {
+		h.perAdmin[c.AdminID]++
+	}
 	go c.writePump()
 	go c.readPump()
 	return true
@@ -69,9 +71,11 @@ func (h *Hub) unregister(c *Client) {
 	h.mu.Lock()
 	if _, ok := h.clients[c]; ok {
 		delete(h.clients, c)
-		h.perAdmin[c.AdminID]--
-		if h.perAdmin[c.AdminID] <= 0 {
-			delete(h.perAdmin, c.AdminID)
+		if c.AdminID != 0 {
+			h.perAdmin[c.AdminID]--
+			if h.perAdmin[c.AdminID] <= 0 {
+				delete(h.perAdmin, c.AdminID)
+			}
 		}
 	}
 	h.mu.Unlock()

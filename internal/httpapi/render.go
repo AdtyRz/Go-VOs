@@ -32,6 +32,7 @@ func NewRenderer(files fs.FS, loc *time.Location) (*Renderer, error) {
 	}
 	specs := map[string]pageSpec{
 		"student/home":     {"templates/layouts/student.html", "templates/student/home.html"},
+		"student/token":    {"templates/layouts/student.html", "templates/student/token.html"},
 		"student/ballot":   {"templates/layouts/student.html", "templates/student/ballot.html"},
 		"student/success":  {"templates/layouts/student.html", "templates/student/success.html"},
 		"admin/login":      {"templates/layouts/auth.html", "templates/admin/login.html"},

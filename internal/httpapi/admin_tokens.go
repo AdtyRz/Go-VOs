@@ -3,10 +3,13 @@ package httpapi
 import (
 	"encoding/csv"
 	"fmt"
+	"log/slog"
 	"net/http"
 	"strconv"
 	"strings"
 	"time"
+
+	"govoting/internal/security"
 )
 
 func (s *Server) apiAdminTokensGenerate(w http.ResponseWriter, r *http.Request) {
@@ -63,6 +66,72 @@ func (s *Server) apiAdminTokensGenerate(w http.ResponseWriter, r *http.Request) 
 		"period":        election.Period,
 		"warning":       "Token asli hanya ditampilkan sekali. Simpan atau cetak sekarang.",
 	})
+}
+
+func (s *Server) apiAdminTokensPrint(w http.ResponseWriter, r *http.Request) {
+	var input struct {
+		ElectionID int64    `json:"election_id"`
+		Tokens     []string `json:"tokens"`
+		ExpiresAt  string   `json:"expires_at"`
+	}
+	if err := decodeJSON(w, r, &input, 128*1024); err != nil {
+		writeAPIError(w, http.StatusBadRequest, "VALIDATION", "Permintaan cetak token tidak valid.")
+		return
+	}
+	election, err := s.selectedElectionForAPI(r, input.ElectionID)
+	if err != nil {
+		writeStoreError(w, err)
+		return
+	}
+	if len(input.Tokens) < 1 || len(input.Tokens) > security.MaxBulkTokenCount {
+		writeAPIError(w, http.StatusBadRequest, "VALIDATION", "Jumlah token yang dicetak harus antara 1 dan 1000.")
+		return
+	}
+	tokens := make([]string, 0, len(input.Tokens))
+	seen := make(map[string]struct{}, len(input.Tokens))
+	for _, raw := range input.Tokens {
+		token, ok := security.NormalizeToken(raw)
+		if !ok {
+			writeAPIError(w, http.StatusBadRequest, "VALIDATION", "Daftar token memuat nilai yang tidak valid.")
+			return
+		}
+		if _, duplicate := seen[token]; duplicate {
+			writeAPIError(w, http.StatusBadRequest, "VALIDATION", "Daftar token memuat nilai ganda.")
+			return
+		}
+		seen[token] = struct{}{}
+		tokens = append(tokens, token)
+	}
+	expiresAt := election.EndAt
+	if strings.TrimSpace(input.ExpiresAt) != "" {
+		parsed, err := parseFlexibleTime(input.ExpiresAt, s.cfg.Timezone)
+		if err != nil {
+			writeAPIError(w, http.StatusBadRequest, "VALIDATION", "Waktu kedaluwarsa token tidak valid.")
+			return
+		}
+		expiresAt = parsed
+	}
+	sess := currentSession(r)
+	school, err := s.st.GetSchool(r.Context(), sess.Admin.SchoolID)
+	if err != nil {
+		writeStoreError(w, err)
+		return
+	}
+	data, pages, err := s.buildTokenSheetPDF(school, election, tokens, expiresAt)
+	if err != nil {
+		slog.Error("pdf kartu token", "error", err)
+		writeAPIError(w, http.StatusInternalServerError, "INTERNAL", "Gagal membuat PDF kartu token.")
+		return
+	}
+	s.audit(r, "TOKEN_PRINT", "election", &election.ID, map[string]any{
+		"count": len(tokens),
+		"pages": pages,
+	})
+	w.Header().Set("Content-Type", "application/pdf")
+	w.Header().Set("Content-Disposition", fmt.Sprintf(`attachment; filename="kartu-token-%d-%s.pdf"`, election.ID, time.Now().In(s.cfg.Timezone).Format("20060102")))
+	w.Header().Set("Cache-Control", "no-store")
+	w.Header().Set("Content-Length", strconv.Itoa(len(data)))
+	_, _ = w.Write(data)
 }
 
 func (s *Server) apiAdminTokensList(w http.ResponseWriter, r *http.Request) {

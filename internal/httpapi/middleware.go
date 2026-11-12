@@ -348,7 +348,7 @@ func writeAPIError(w http.ResponseWriter, status int, code, message string) {
 func writeStoreError(w http.ResponseWriter, err error) {
 	switch {
 	case errors.Is(err, store.ErrTokenInvalid), errors.Is(err, store.ErrAlreadyUsed):
-		writeAPIError(w, http.StatusUnauthorized, "TOKEN_INVALID", "Token tidak valid atau sudah digunakan. Hubungi panitia bila Anda merasa ini keliru.")
+		writeAPIError(w, http.StatusUnauthorized, "TOKEN_INVALID", "Token yang digunakan salah, coba lagi.")
 	case errors.Is(err, store.ErrSessionInvalid):
 		writeAPIError(w, http.StatusUnauthorized, "SESSION_INVALID", "Sesi memilih sudah berakhir. Silakan masukkan token kembali.")
 	case errors.Is(err, store.ErrElectionClosed):

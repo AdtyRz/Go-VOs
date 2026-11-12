@@ -8,8 +8,8 @@
   <div class="page-head-actions">
     {{with .Election}}
     <span class="badge badge-{{statusclass .Status}}">{{.StatusLabel}}</span>
-    <a class="btn btn-ghost btn-sm" href="/api/v1/admin/results/export?election_id={{.ID}}&format=csv">Ekspor CSV</a>
-    <a class="btn btn-primary btn-sm" href="/api/v1/admin/results/export?election_id={{.ID}}&format=pdf">Unduh PDF</a>
+    <button class="btn btn-ghost btn-sm" type="button" data-export-results="csv">Ekspor CSV</button>
+    <button class="btn btn-primary btn-sm" type="button" data-export-results="pdf">Unduh PDF</button>
     {{end}}
   </div>
 </div>
@@ -32,7 +32,7 @@
       <div><strong data-winner-votes>{{if .Results.Candidates}}{{with index .Results.Candidates 0}}{{.Votes}}{{end}}{{else}}0{{end}}</strong><span>suara</span></div>
       <div><strong data-winner-pct>{{if .Results.Candidates}}{{with index .Results.Candidates 0}}{{pct .Percentage}}{{end}}{{else}}0,0%{{end}}</strong><span>dari suara sah</span></div>
     </div>
-    <p class="winner-note" data-winner-note>{{if eq .Election.ResultsVisibility "LIVE"}}Angka sementara, diperbarui otomatis saat suara masuk.{{else}}Mode final: angka tetap diperbarui, publikasi resmi menunggu pemilihan ditutup.{{end}}</p>
+    <p class="winner-note" data-winner-note>{{if eq .Election.ResultsVisibility "LIVE"}}Angka sementara, diperbarui otomatis saat suara masuk. Hasil juga tampil di beranda publik.{{else}}Angka tetap diperbarui untuk panitia. Publik baru melihat hasil setelah pemilihan ditutup.{{end}}</p>
   </section>
 
   <div class="result-side">
@@ -115,7 +115,7 @@
         <div class="meta-block"><dt>Periode</dt><dd>{{.Election.Period}}</dd></div>
         <div class="meta-block"><dt>Mulai</dt><dd>{{shortdatetime .Election.StartAt}}</dd></div>
         <div class="meta-block"><dt>Selesai</dt><dd>{{shortdatetime .Election.EndAt}}</dd></div>
-        <div class="meta-block"><dt>Mode hasil</dt><dd>{{if eq .Election.ResultsVisibility "LIVE"}}Live monitoring{{else}}Final setelah ditutup{{end}}</dd></div>
+        <div class="meta-block"><dt>Tampilan hasil</dt><dd>{{if eq .Election.ResultsVisibility "LIVE"}}Publik (live){{else}}Privat sampai ditutup{{end}}</dd></div>
       </dl>
     </section>
   </aside>

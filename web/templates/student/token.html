@@ -1,0 +1,45 @@
+{{define "content"}}
+<section class="token-main">
+  <header class="token-head">
+    <p class="eyebrow">Akses pemilih{{with .Election}} - {{.Period}}{{end}}</p>
+    <h1>{{if .IsOpen}}Masukkan token Anda.{{else}}Bilik suara tertutup.{{end}}</h1>
+    <p class="token-lede">{{if .IsOpen}}Halaman ini hanya untuk memasukkan token. Token terdiri dari lima karakter, diberikan oleh panitia, dan hanya dapat dipakai satu kali.{{else}}Pemilihan belum dibuka atau sudah ditutup. Pantau pengumuman panitia untuk jadwal berikutnya.{{end}}</p>
+  </header>
+
+  <div class="access-panel token-panel">
+    <div class="panel-kicker">
+      <span>Akses pemilih</span>
+      <strong>{{if .IsOpen}}Token aktif{{else}}Belum tersedia{{end}}</strong>
+    </div>
+
+    {{if .IsOpen}}
+      {{if .Notice}}<div class="alert alert-{{.NoticeKind}}" role="alert">{{.Notice}}</div>{{end}}
+      <form class="access-form" id="token-form" aria-describedby="token-help">
+        <label class="token-label" for="token-input">Token pemilih <span>5 karakter</span></label>
+        <input class="token-input" id="token-input" name="token" type="text" inputmode="text" autocomplete="one-time-code" autocapitalize="characters" spellcheck="false" maxlength="5" pattern="[A-Za-z0-9]{5}" placeholder="A1B2C" required aria-describedby="token-help token-error">
+        <div class="token-help" id="token-help">
+          <span>Sekali pakai</span>
+          <span>Tanpa data pribadi</span>
+        </div>
+        <p class="form-message" id="token-error" role="alert" hidden></p>
+        <button class="btn btn-primary btn-lg btn-block" type="submit" id="token-submit">
+          Masuk ke bilik suara
+          <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+        </button>
+      </form>
+      <div class="access-note">
+        <svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M12 3 5 6v5c0 4.8 2.9 8.2 7 10 4.1-1.8 7-5.2 7-10V6l-7-3Z"/><path d="m9 12 2 2 4-4"/></svg>
+        <span>Pilihan Anda tidak pernah disimpan bersama token, sesi, atau identitas pemilih.</span>
+      </div>
+    {{else}}
+      <div class="access-closed">
+        <strong>Belum ada pemilihan aktif.</strong>
+        <p>Halaman ini akan menampilkan formulir token begitu panitia membuka periode pemilihan.</p>
+        <a class="btn btn-ghost btn-sm" href="/">Kembali ke beranda</a>
+      </div>
+    {{end}}
+  </div>
+
+  <p class="token-back"><a href="/">Kembali ke beranda</a></p>
+</section>
+{{end}}

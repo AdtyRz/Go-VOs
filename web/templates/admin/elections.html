@@ -23,7 +23,7 @@
   <article class="election-card status-{{statusclass .Status}}" data-election-id="{{.ID}}" data-name="{{.Name}}" data-period="{{.Period}}" data-description="{{.Description}}" data-start="{{inputdate .StartAt}}" data-end="{{inputdate .EndAt}}" data-visibility="{{.ResultsVisibility}}">
     <div class="election-card-status">
       <span class="badge badge-{{statusclass .Status}}">{{.StatusLabel}}</span>
-      {{if eq .ResultsVisibility "LIVE"}}<span class="badge no-dot">Mode live</span>{{else}}<span class="badge no-dot">Mode final</span>{{end}}
+      {{if eq .ResultsVisibility "LIVE"}}<span class="badge no-dot">Hasil publik</span>{{else}}<span class="badge no-dot">Hasil privat</span>{{end}}
       {{if eq .Status "ACTIVE"}}<span class="live-indicator" data-state="live"><i></i><span>Berlangsung</span></span>{{end}}
     </div>
     <div class="election-card-body">
@@ -34,7 +34,7 @@
         <div class="meta-block"><dt>Mulai</dt><dd>{{shortdatetime .StartAt}}</dd></div>
         <div class="meta-block"><dt>Selesai</dt><dd>{{shortdatetime .EndAt}}</dd></div>
         <div class="meta-block"><dt>Pasangan calon</dt><dd>{{.CandidateCount}} aktif</dd></div>
-        <div class="meta-block"><dt>Hasil</dt><dd>{{if eq .ResultsVisibility "LIVE"}}Live monitoring{{else}}Final setelah ditutup{{end}}</dd></div>
+        <div class="meta-block"><dt>Hasil</dt><dd>{{if eq .ResultsVisibility "LIVE"}}Publik (live){{else}}Privat sampai ditutup{{end}}</dd></div>
       </dl>
     </div>
     <div class="election-card-actions">
@@ -79,12 +79,12 @@
         <input class="input" id="election-period" name="period" type="text" required maxlength="80" placeholder="mis. 2026/2027">
       </div>
       <div class="field">
-        <label for="election-visibility">Mode hasil</label>
+        <label for="election-visibility">Tampilan hasil</label>
         <select class="select" id="election-visibility" name="results_visibility">
-          <option value="LIVE">Live monitoring</option>
-          <option value="FINAL">Final setelah ditutup</option>
+          <option value="LIVE">Publik - live di beranda</option>
+          <option value="FINAL">Privat - tampil setelah ditutup</option>
         </select>
-        <p class="field-hint">Semua hasil tetap hanya terlihat oleh panitia.</p>
+        <p class="field-hint">Publik menampilkan hasil live di beranda. Privat menyembunyikan hasil dari publik sampai pemilihan ditutup.</p>
       </div>
       <div class="field">
         <label for="election-start">Mulai</label>

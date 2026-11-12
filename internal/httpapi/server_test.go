@@ -96,6 +96,20 @@ func TestAdminPageRedirectsToLogin(t *testing.T) {
 	}
 }
 
+func TestLegacyVoteRouteRedirectsToToken(t *testing.T) {
+	server := newTestServer(t)
+	req := httptest.NewRequest(http.MethodGet, "/vote", nil)
+	rec := httptest.NewRecorder()
+	server.Handler().ServeHTTP(rec, req)
+
+	if rec.Code != http.StatusSeeOther {
+		t.Fatalf("status = %d, mau 303", rec.Code)
+	}
+	if location := rec.Header().Get("Location"); location != "/token" {
+		t.Fatalf("Location = %q, mau /token", location)
+	}
+}
+
 func TestCrossSiteWriteIsRejected(t *testing.T) {
 	server := newTestServer(t)
 	req := httptest.NewRequest(http.MethodPost, "/api/v1/voting/validate-token", nil)

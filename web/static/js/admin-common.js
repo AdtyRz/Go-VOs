@@ -201,8 +201,7 @@
     return fallbackCopy(text);
   }
 
-  function downloadFile(filename, content, mime = "text/csv;charset=utf-8") {
-    const blob = new Blob([content], { type: mime });
+  function saveBlob(filename, blob) {
     const url = URL.createObjectURL(blob);
     const link = document.createElement("a");
     link.href = url;
@@ -212,6 +211,59 @@
     link.click();
     link.remove();
     window.setTimeout(() => URL.revokeObjectURL(url), 1500);
+  }
+
+  function downloadFile(filename, content, mime = "text/csv;charset=utf-8") {
+    saveBlob(filename, new Blob([content], { type: mime }));
+  }
+
+  async function fetchFile(path, options = {}, fallbackMessage = "Berkas tidak dapat diunduh.") {
+    const method = (options.method || "GET").toUpperCase();
+    const headers = new Headers(options.headers || {});
+    headers.set("X-CSRF-Token", csrf);
+    headers.set("Accept", "application/pdf, text/csv, */*");
+    let body = options.body;
+    if (body && !(body instanceof FormData) && typeof body !== "string") {
+      headers.set("Content-Type", "application/json");
+      body = JSON.stringify(body);
+    }
+
+    let response;
+    try {
+      response = await fetch(path, {
+        method,
+        headers,
+        body,
+        credentials: "same-origin",
+        redirect: "follow",
+      });
+    } catch (error) {
+      throw new Error("Tidak dapat terhubung ke server. Periksa koneksi Anda.");
+    }
+
+    if (response.status === 401) {
+      window.location.assign("/admin/login");
+      throw new Error("Sesi berakhir. Silakan login kembali.");
+    }
+
+    if (!response.ok) {
+      let message = fallbackMessage;
+      const contentType = response.headers.get("content-type") || "";
+      if (contentType.includes("application/json")) {
+        const payload = await response.json().catch(() => null);
+        if (payload && payload.error && payload.error.message) message = payload.error.message;
+      } else if (response.status === 429) {
+        message = "Terlalu banyak permintaan. Tunggu sebentar lalu coba lagi.";
+      }
+      throw new Error(message);
+    }
+    return response.blob();
+  }
+
+  async function downloadFromServer(path, filename, options = {}, fallbackMessage = "Berkas tidak dapat diunduh.") {
+    const blob = await fetchFile(path, options, fallbackMessage);
+    saveBlob(filename, blob);
+    return blob;
   }
 
   function makeElement(tag, className, text) {
@@ -454,6 +506,7 @@
     copyText,
     csrf,
     downloadFile,
+    downloadFromServer,
     formatDateTime,
     formatNumber,
     formatPercent,

@@ -82,14 +82,18 @@
     return data.data;
   }
 
-  function redirectFor(path, error) {
+  function redirectFor(error) {
     if (!error) return false;
-    if (error.code === "SESSION_INVALID" || error.code === "TOKEN_INVALID") {
-      window.location.assign("/vote?status=expired");
+    if (error.code === "SESSION_INVALID") {
+      window.location.assign("/token?status=expired");
+      return true;
+    }
+    if (error.code === "TOKEN_INVALID") {
+      window.location.assign("/token");
       return true;
     }
     if (error.code === "ELECTION_CLOSED") {
-      window.location.assign("/vote?status=closed");
+      window.location.assign("/token?status=closed");
       return true;
     }
     return false;
@@ -132,7 +136,6 @@
         const data = await postJSON("/api/v1/voting/validate-token", { token });
         window.location.assign((data && data.redirect) || "/vote/ballot");
       } catch (error) {
-        if (redirectFor("/vote", error)) return;
         showError(errorBox, error.message);
         setBusy(submit, false);
         if (input) {
@@ -140,6 +143,141 @@
           input.select();
         }
       }
+    });
+  }
+
+  function initHomeResults() {
+    const panel = qs("[data-public-results]");
+    if (!panel || panel.dataset.live !== "true") return;
+    const electionId = panel.dataset.electionId;
+    const list = qs("[data-public-list]", panel);
+    const numberFormat = new Intl.NumberFormat("id-ID");
+    const percentFormat = new Intl.NumberFormat("id-ID", {
+      minimumFractionDigits: 1,
+      maximumFractionDigits: 1,
+    });
+
+    function setLiveState(state, text) {
+      qsa("[data-public-live]").forEach((node) => {
+        node.dataset.state = state;
+      });
+      qsa("[data-public-live-text]").forEach((node) => {
+        node.textContent = text;
+      });
+    }
+
+    function render(payload) {
+      if (!payload || !Array.isArray(payload.candidates)) return;
+      qsa("[data-public-total]").forEach((node) => {
+        node.textContent = numberFormat.format(payload.total_votes || 0);
+      });
+
+      const ordered = [];
+      payload.candidates.forEach((candidate) => {
+        if (!list) return;
+        const item = list.querySelector('[data-candidate-id="' + candidate.candidate_id + '"]');
+        if (!item) return;
+        const rank = item.querySelector("[data-public-rank]");
+        const votes = item.querySelector("[data-public-votes]");
+        const percent = item.querySelector("[data-public-pct]");
+        const bar = item.querySelector("progress");
+        const formattedPercent = percentFormat.format(candidate.percentage || 0) + "%";
+        if (rank) rank.textContent = "#" + candidate.rank;
+        if (votes) votes.textContent = numberFormat.format(candidate.votes || 0) + " suara";
+        if (percent) percent.textContent = formattedPercent;
+        if (bar) {
+          bar.value = candidate.percentage || 0;
+          bar.textContent = formattedPercent;
+        }
+        item.dataset.votes = String(candidate.votes || 0);
+        ordered.push(item);
+      });
+      ordered.forEach((item) => list.appendChild(item));
+
+      const leader = payload.candidates[0];
+      if (leader) {
+        const fields = {
+          "[data-public-leader-number]": String(leader.candidate_number).padStart(2, "0"),
+          "[data-public-leader-chairman]": leader.chairman_name,
+          "[data-public-leader-vice]": leader.vice_chairman_name,
+          "[data-public-leader-votes]": numberFormat.format(leader.votes || 0),
+          "[data-public-leader-pct]": percentFormat.format(leader.percentage || 0) + "%",
+        };
+        Object.keys(fields).forEach((selector) => {
+          const node = qs(selector);
+          if (node) node.textContent = fields[selector];
+        });
+      }
+    }
+
+    if (!electionId || !("WebSocket" in window)) {
+      setLiveState("offline", "Live tidak tersedia");
+      return;
+    }
+
+    let socket = null;
+    let attempt = 0;
+    let stopped = false;
+    let retryTimer = 0;
+
+    const endpoint = () => {
+      const protocol = window.location.protocol === "https:" ? "wss:" : "ws:";
+      return protocol + "//" + window.location.host + "/ws/public/results";
+    };
+
+    const scheduleRetry = () => {
+      if (stopped) return;
+      attempt += 1;
+      const delay = Math.min(1000 * Math.pow(1.7, attempt), 20000);
+      setLiveState("offline", "Menyambung ulang...");
+      window.clearTimeout(retryTimer);
+      retryTimer = window.setTimeout(connect, delay);
+    };
+
+    const connect = () => {
+      if (stopped) return;
+      setLiveState("connecting", "Menghubungkan live...");
+      try {
+        socket = new WebSocket(endpoint());
+      } catch (error) {
+        scheduleRetry();
+        return;
+      }
+
+      socket.addEventListener("open", () => {
+        attempt = 0;
+        setLiveState("live", "Live tersambung");
+      });
+
+      socket.addEventListener("message", (event) => {
+        let message;
+        try {
+          message = JSON.parse(event.data);
+        } catch (error) {
+          return;
+        }
+        if (message && (message.event === "snapshot" || message.event === "vote_update")) {
+          render(message.data);
+        }
+      });
+
+      socket.addEventListener("close", () => {
+        if (stopped) return;
+        socket = null;
+        scheduleRetry();
+      });
+
+      socket.addEventListener("error", () => {
+        if (socket) socket.close();
+      });
+    };
+
+    connect();
+
+    window.addEventListener("pagehide", () => {
+      stopped = true;
+      window.clearTimeout(retryTimer);
+      if (socket) socket.close();
     });
   }
 
@@ -191,9 +329,9 @@
           const data = await postJSON("/api/v1/voting/submit", {
             candidate_id: Number(selectedCandidate),
           });
-          window.location.assign((data && data.redirect) || "/vote/selesai");
+          window.location.assign((data && data.redirect) || "/?status=success");
         } catch (error) {
-          if (redirectFor("/vote", error)) return;
+          if (redirectFor(error)) return;
           showError("#vote-error", error.message);
           setBusy(confirmVote, false);
         }
@@ -212,9 +350,9 @@
         setBusy(confirmCancel, true);
         try {
           const data = await postJSON("/api/v1/voting/cancel", {});
-          window.location.assign((data && data.redirect) || "/vote");
+          window.location.assign((data && data.redirect) || "/token");
         } catch (error) {
-          if (redirectFor("/vote", error)) return;
+          if (redirectFor(error)) return;
           showError("#cancel-error", error.message);
           setBusy(confirmCancel, false);
         }
@@ -227,12 +365,14 @@
       "DOMContentLoaded",
       () => {
         initTokenForm();
+        initHomeResults();
         initBallot();
       },
       { once: true }
     );
   } else {
     initTokenForm();
+    initHomeResults();
     initBallot();
   }
 })();

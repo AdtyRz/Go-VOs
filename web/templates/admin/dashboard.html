@@ -113,7 +113,7 @@
         <div class="meta-block"><dt>Periode</dt><dd>{{.Election.Period}}</dd></div>
         <div class="meta-block"><dt>Mulai</dt><dd>{{shortdatetime .Election.StartAt}}</dd></div>
         <div class="meta-block"><dt>Selesai</dt><dd>{{shortdatetime .Election.EndAt}}</dd></div>
-        <div class="meta-block"><dt>Mode hasil</dt><dd>{{if eq .Election.ResultsVisibility "LIVE"}}Live monitoring{{else}}Final setelah ditutup{{end}}</dd></div>
+        <div class="meta-block"><dt>Tampilan hasil</dt><dd>{{if eq .Election.ResultsVisibility "LIVE"}}Publik (live){{else}}Privat sampai ditutup{{end}}</dd></div>
       </dl>
       <a class="btn btn-ghost btn-sm btn-block" href="/admin/elections">Atur periode pemilihan</a>
     </section>

@@ -8,7 +8,7 @@
   <div class="page-head-actions">
     {{with .Election}}<span class="badge badge-{{statusclass .Status}}">{{.StatusLabel}}</span>{{end}}
     {{if .Election}}
-    <a class="btn btn-ghost btn-sm" href="/api/v1/admin/tokens/export?election_id={{.Election.ID}}">Unduh metadata</a>
+    <button class="btn btn-ghost btn-sm" type="button" data-download-token-meta>Unduh metadata</button>
     <button class="btn btn-primary btn-sm" type="button" data-token-generate>Terbitkan token</button>
     {{end}}
   </div>
@@ -145,10 +145,12 @@
     </div>
     <div class="generated-tokens" id="generated-tokens" aria-live="polite"></div>
     <p class="form-message is-success" role="status">Daftar ini hanya ada di layar Anda. Jangan muat ulang halaman sebelum menyimpannya.</p>
+    <p class="dialog-copy">PDF cetak menata 28 kartu per halaman A4 dengan garis potong dan tanpa kartu terpotong antar halaman. Gunakan tombol Unduh PDF cetak sebelum menutup dialog ini.</p>
     <div class="dialog-actions dialog-actions-wrap">
       <button class="btn btn-ghost" type="button" data-copy-tokens>Salin semua</button>
       <button class="btn btn-ghost" type="button" data-download-tokens>Unduh CSV</button>
-      <button class="btn btn-primary" type="button" data-complete-generation>Selesai &amp; muat ulang</button>
+      <button class="btn btn-primary" type="button" data-print-tokens>Unduh PDF cetak</button>
+      <button class="btn btn-ghost" type="button" data-complete-generation>Selesai &amp; muat ulang</button>
     </div>
   </div>
 </dialog>

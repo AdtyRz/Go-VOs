@@ -4,10 +4,12 @@ Aplikasi pemungutan suara elektronik OSIS berbasis Go dan MySQL. Antarmuka siswa
 
 ## Fitur
 
+- Halaman beranda terpisah dari halaman `/token` yang khusus untuk memasukkan token.
 - Validasi token sekali pakai, sesi memilih, bilik suara, konfirmasi, dan halaman selesai.
 - Suara anonim: tabel `votes` hanya menyimpan pemilihan, calon, dan waktu.
-- Token dibuat massal, dicabut, dipantau, dan diekspor oleh panitia.
+- Token dibuat massal, dicabut, dipantau, diekspor, dan dicetak sebagai kartu A4 oleh panitia.
 - Panel admin untuk sekolah, tema, periode pemilihan, pasangan calon, token, hasil, dan jejak audit.
+- Hasil publik di beranda: live saat pemilihan berlangsung atau final setelah ditutup, sesuai pengaturan visibilitas.
 - Hasil langsung melalui WebSocket serta ekspor CSV dan laporan PDF.
 - Empat tema: Batik, Indonesia, Wayang, dan Modern Glass.
 - Kata sandi Argon2id, hash token HMAC, cookie HttpOnly, CSRF, pembatasan laju, dan header keamanan.
@@ -52,8 +54,9 @@ Prasyarat: Docker Engine dan Docker Compose v2.
 5. Buka `http://localhost:8080`. Panel admin berada di `http://localhost:8080/admin/login`.
 
 6. Login dengan akun admin dari `.env`, lalu buat token dari menu Token Pemilih.
+7. Bagikan alamat `http://localhost:8080/token` kepada siswa. Halaman beranda menampilkan informasi pemilihan dan hasil publik sesuai pengaturan visibilitas.
 
-Tidak ada token demo yang dibuat otomatis. Token asli hanya ditampilkan sekali setelah dibuat, jadi simpan atau cetak daftar token sebelum menutup jendela.
+Tidak ada token demo yang dibuat otomatis. Token asli hanya ditampilkan sekali setelah dibuat, jadi simpan, ekspor, atau cetak kartu token sebelum menutup jendela. Halaman lama `/vote` tetap tersedia sebagai pengalihan ke `/token`.
 
 Untuk menghentikan layanan:
 
@@ -85,6 +88,19 @@ Prasyarat: Go 1.26 dan MySQL 8.
    ```
 
 Migrasi dijalankan otomatis saat `AUTO_MIGRATE=true`. Seed sekolah dan admin pertama hanya berjalan ketika database masih kosong. Atur `SEED_DEMO=true` bila ingin membuat pemilihan contoh beserta tiga pasangan calon.
+
+## Alur Siswa dan Hasil Publik
+
+1. Siswa membuka beranda `/` untuk membaca informasi pemilihan. Bila hasil publik diaktifkan, beranda juga menampilkan perolehan suara.
+2. Siswa membuka `/token`, memasukkan token lima karakter dari panitia, lalu memilih di bilik suara.
+3. Setelah suara tersimpan, siswa kembali ke beranda dengan konfirmasi bahwa suara sudah tercatat. Token salah menampilkan pesan `Token yang digunakan salah, coba lagi.` dan tetap berada di halaman token.
+
+Pengaturan `results_visibility` pada pemilihan menentukan tampilan publik:
+
+- `LIVE`: hasil tampil di beranda sejak pemilihan aktif dan diperbarui melalui WebSocket `/ws/public/results`.
+- `FINAL`: hasil disembunyikan dari publik sampai pemilihan ditutup, lalu ditampilkan sebagai hasil akhir.
+
+Hasil publik hanya memuat nomor urut, nama pasangan, perolehan suara, peringkat, persentase, dan total suara sah. Token, sesi, dan identitas pemilih tidak pernah ditampilkan. Panitia dapat mengunduh kartu token A4 dari menu Token Pemilih; setiap halaman memuat 28 kartu.
 
 ## Konfigurasi
 

@@ -88,16 +88,20 @@ func (s *Server) Handler() http.Handler {
 	})
 
 	mux.HandleFunc("GET /{$}", s.studentHome)
-	mux.HandleFunc("GET /vote", s.studentHome)
+	mux.HandleFunc("GET /token", s.studentToken)
+	mux.Handle("GET /vote", http.RedirectHandler("/token", http.StatusSeeOther))
 	mux.HandleFunc("GET /vote/ballot", s.studentBallot)
 	mux.HandleFunc("GET /vote/selesai", s.studentSuccess)
 
 	mux.HandleFunc("GET /api/v1/public/school", s.apiPublicSchool)
 	mux.HandleFunc("GET /api/v1/public/election", s.apiPublicElection)
 	mux.HandleFunc("GET /api/v1/public/candidates", s.apiPublicCandidates)
+	mux.HandleFunc("GET /api/v1/public/results", s.apiPublicResults)
 	mux.HandleFunc("POST /api/v1/voting/validate-token", s.apiValidateToken)
 	mux.HandleFunc("POST /api/v1/voting/submit", s.apiSubmitVote)
 	mux.HandleFunc("POST /api/v1/voting/cancel", s.apiCancelVote)
+
+	mux.HandleFunc("GET /ws/public/results", s.wsPublicResults)
 
 	mux.Handle("GET /admin/login", s.adminSession(http.HandlerFunc(s.adminLoginPage)))
 	mux.Handle("POST /api/v1/admin/login", s.adminSession(http.HandlerFunc(s.apiAdminLogin)))
@@ -124,6 +128,7 @@ func (s *Server) Handler() http.Handler {
 	mux.Handle("GET /api/v1/admin/tokens", admin(s.apiAdminTokensList))
 	mux.Handle("GET /api/v1/admin/tokens/statistics", admin(s.apiAdminTokenStats))
 	mux.Handle("POST /api/v1/admin/tokens/revoke", admin(s.apiAdminTokensRevoke))
+	mux.Handle("POST /api/v1/admin/tokens/print", admin(s.apiAdminTokensPrint))
 	mux.Handle("GET /api/v1/admin/tokens/export", admin(s.apiAdminTokensExport))
 	mux.Handle("GET /api/v1/admin/results", admin(s.apiAdminResults))
 	mux.Handle("GET /api/v1/admin/results/statistics", admin(s.apiAdminResults))

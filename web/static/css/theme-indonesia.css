@@ -240,6 +240,24 @@ body.theme-indonesia {
   color: var(--krem);
 }
 
+.theme-indonesia .panel-kicker .live-indicator[data-state="live"] {
+  color: var(--success);
+  background: var(--success-bg);
+  border-color: color-mix(in srgb, var(--success) 28%, transparent);
+}
+
+.theme-indonesia .panel-kicker .live-indicator[data-state="connecting"] {
+  color: var(--warning);
+  background: var(--warning-bg);
+  border-color: color-mix(in srgb, var(--warning) 28%, transparent);
+}
+
+.theme-indonesia .panel-kicker .live-indicator[data-state="offline"] {
+  color: var(--danger);
+  background: var(--danger-bg);
+  border-color: color-mix(in srgb, var(--danger) 28%, transparent);
+}
+
 .theme-indonesia .access-panel h2 {
   margin-top: 1.4rem;
   font-family: "Anton", sans-serif;

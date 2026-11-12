@@ -17,6 +17,10 @@ type studentHomeData struct {
 	CandidateCount int
 	Notice         string
 	NoticeKind     string
+	ResultsVisible bool
+	ResultsFinal   bool
+	ResultsLive    bool
+	Results        *publicResultsPayload
 }
 
 func (s *Server) studentHome(w http.ResponseWriter, r *http.Request) {
@@ -25,23 +29,63 @@ func (s *Server) studentHome(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Aplikasi belum siap.", http.StatusInternalServerError)
 		return
 	}
+	now := time.Now().UTC()
 	data := studentHomeData{BasePage: *base}
-	election, err := s.st.GetActiveElection(r.Context(), base.School.ID, time.Now().UTC())
+	election, err := s.st.GetPreferredElection(r.Context(), base.School.ID, now)
 	if err == nil {
 		data.Election = election
-		data.IsOpen = true
-		candidates, err := s.st.ListCandidates(r.Context(), election.ID, true)
-		if err == nil {
-			data.CandidateCount = len(candidates)
+		data.IsOpen = election.IsOpen(now)
+		data.CandidateCount = election.CandidateCount
+		if publicResultsVisible(election, now) {
+			payload, err := s.buildPublicResults(r.Context(), election, now)
+			if err != nil {
+				http.Error(w, "Gagal memuat hasil pemilihan.", http.StatusInternalServerError)
+				return
+			}
+			data.ResultsVisible = true
+			data.ResultsFinal = payload.ResultsFinal
+			data.ResultsLive = data.IsOpen && election.ResultsVisibility == "LIVE"
+			data.Results = payload
 		}
-	} else if !errors.Is(err, store.ErrNoActiveElection) {
+	} else if !errors.Is(err, store.ErrNotFound) && !errors.Is(err, store.ErrNoActiveElection) {
+		http.Error(w, "Gagal memuat pemilihan.", http.StatusInternalServerError)
+		return
+	}
+
+	if r.URL.Query().Get("status") == "success" {
+		data.Notice = "Suara Anda sudah tercatat. Terima kasih sudah menggunakan hak suara."
+		data.NoticeKind = "success"
+	}
+	s.renderer.Render(w, http.StatusOK, "student/home", data)
+}
+
+type studentTokenData struct {
+	BasePage
+	IsOpen     bool
+	Notice     string
+	NoticeKind string
+}
+
+func (s *Server) studentToken(w http.ResponseWriter, r *http.Request) {
+	base, err := s.siteBase(r.Context(), "Masukkan Token", "token")
+	if err != nil {
+		http.Error(w, "Aplikasi belum siap.", http.StatusInternalServerError)
+		return
+	}
+	now := time.Now().UTC()
+	data := studentTokenData{BasePage: *base}
+	election, err := s.st.GetPreferredElection(r.Context(), base.School.ID, now)
+	if err == nil {
+		data.Election = election
+		data.IsOpen = election.IsOpen(now)
+	} else if !errors.Is(err, store.ErrNotFound) && !errors.Is(err, store.ErrNoActiveElection) {
 		http.Error(w, "Gagal memuat pemilihan.", http.StatusInternalServerError)
 		return
 	}
 
 	switch r.URL.Query().Get("status") {
 	case "expired":
-		data.Notice = "Sesi memilih sudah berakhir. Masukkan token Anda kembali untuk melanjutkan."
+		data.Notice = "Sesi memilih sudah berakhir. Masukkan token kembali untuk melanjutkan."
 		data.NoticeKind = "warning"
 	case "closed":
 		data.Notice = "Pemilihan belum dibuka atau sudah ditutup."
@@ -50,7 +94,7 @@ func (s *Server) studentHome(w http.ResponseWriter, r *http.Request) {
 		data.Notice = "Terjadi kendala. Silakan coba lagi atau hubungi panitia."
 		data.NoticeKind = "warning"
 	}
-	s.renderer.Render(w, http.StatusOK, "student/home", data)
+	s.renderer.Render(w, http.StatusOK, "student/token", data)
 }
 
 type studentBallotData struct {
@@ -62,7 +106,7 @@ type studentBallotData struct {
 func (s *Server) studentBallot(w http.ResponseWriter, r *http.Request) {
 	cookie, err := r.Cookie(studentCookieName)
 	if err != nil || cookie.Value == "" {
-		http.Redirect(w, r, "/vote?status=expired", http.StatusSeeOther)
+		http.Redirect(w, r, "/token?status=expired", http.StatusSeeOther)
 		return
 	}
 	now := time.Now().UTC()
@@ -73,13 +117,13 @@ func (s *Server) studentBallot(w http.ResponseWriter, r *http.Request) {
 		if errors.Is(err, store.ErrElectionClosed) {
 			status = "closed"
 		}
-		http.Redirect(w, r, "/vote?status="+status, http.StatusSeeOther)
+		http.Redirect(w, r, "/token?status="+status, http.StatusSeeOther)
 		return
 	}
 	school, err := s.st.GetDefaultSchool(r.Context())
 	if err != nil || school.ID != election.SchoolID {
 		s.clearCookie(w, studentCookieName)
-		http.Redirect(w, r, "/vote?status=error", http.StatusSeeOther)
+		http.Redirect(w, r, "/token?status=error", http.StatusSeeOther)
 		return
 	}
 	candidates, err := s.st.ListCandidates(r.Context(), election.ID, true)
@@ -222,7 +266,7 @@ func (s *Server) apiValidateToken(w http.ResponseWriter, r *http.Request) {
 	}
 	token, valid := security.NormalizeToken(input.Token)
 	if !valid {
-		writeAPIError(w, http.StatusUnauthorized, "TOKEN_INVALID", "Token tidak valid atau sudah digunakan. Hubungi panitia bila Anda merasa ini keliru.")
+		writeAPIError(w, http.StatusUnauthorized, "TOKEN_INVALID", "Token yang digunakan salah, coba lagi.")
 		return
 	}
 
@@ -313,14 +357,14 @@ func (s *Server) apiSubmitVote(w http.ResponseWriter, r *http.Request) {
 	}
 	s.clearCookie(w, studentCookieName)
 	s.broadcastLive(r.Context(), electionID)
-	writeData(w, http.StatusOK, map[string]any{"redirect": "/vote/selesai"})
+	writeData(w, http.StatusOK, map[string]any{"redirect": "/?status=success"})
 }
 
 func (s *Server) apiCancelVote(w http.ResponseWriter, r *http.Request) {
 	cookie, err := r.Cookie(studentCookieName)
 	if err != nil || cookie.Value == "" {
 		s.clearCookie(w, studentCookieName)
-		writeData(w, http.StatusOK, map[string]any{"redirect": "/vote"})
+		writeData(w, http.StatusOK, map[string]any{"redirect": "/token"})
 		return
 	}
 	hash := security.HashSession(cookie.Value)
@@ -332,7 +376,7 @@ func (s *Server) apiCancelVote(w http.ResponseWriter, r *http.Request) {
 	}
 	_ = s.st.CancelVotingSession(r.Context(), hash)
 	s.clearCookie(w, studentCookieName)
-	writeData(w, http.StatusOK, map[string]any{"redirect": "/vote"})
+	writeData(w, http.StatusOK, map[string]any{"redirect": "/token"})
 }
 
 func retrySeconds(d time.Duration) string {

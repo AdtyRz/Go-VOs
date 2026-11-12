@@ -14,6 +14,8 @@
   const checkAll = document.querySelector("[data-check-all]");
   const revokeSelected = document.querySelector("[data-revoke-selected]");
   const revokeAll = document.querySelector("[data-revoke-all]");
+  const metadataButton = document.querySelector("[data-download-token-meta]");
+  const printButton = document.querySelector("[data-print-tokens]");
   let lastTokens = [];
   let lastExpiry = "";
 
@@ -114,6 +116,30 @@
     });
   }
 
+  function fileSuffix() {
+    return new Date().toISOString().slice(0, 10);
+  }
+
+  if (metadataButton) {
+    metadataButton.addEventListener("click", async () => {
+      if (!electionId) return;
+      GV.setBusy(metadataButton, true);
+      try {
+        await GV.downloadFromServer(
+          "/api/v1/admin/tokens/export?election_id=" + encodeURIComponent(electionId),
+          "token-metadata-" + electionId + "-" + fileSuffix() + ".csv",
+          {},
+          "Gagal mengunduh metadata token."
+        );
+        GV.toast("Metadata token diunduh. Berkas ini tidak memuat nilai token.", "success");
+      } catch (error) {
+        GV.toast(error.message, "error");
+      } finally {
+        GV.setBusy(metadataButton, false);
+      }
+    });
+  }
+
   const copyButton = document.querySelector("[data-copy-tokens]");
   if (copyButton) {
     copyButton.addEventListener("click", async () => {
@@ -136,9 +162,35 @@
         rows
           .map((row) => row.map(csvEscape).join(","))
           .join("\r\n");
-      const suffix = new Date().toISOString().slice(0, 10);
-      GV.downloadFile("token-pemilih-" + (electionId || "pemilihan") + "-" + suffix + ".csv", csv);
+      GV.downloadFile("token-pemilih-" + (electionId || "pemilihan") + "-" + fileSuffix() + ".csv", csv);
       GV.toast("CSV berisi nilai token diunduh. Simpan dengan aman.", "success");
+    });
+  }
+
+  if (printButton) {
+    printButton.addEventListener("click", async () => {
+      if (!lastTokens.length) return;
+      GV.setBusy(printButton, true);
+      try {
+        await GV.downloadFromServer(
+          "/api/v1/admin/tokens/print",
+          "kartu-token-" + (electionId || "pemilihan") + "-" + fileSuffix() + ".pdf",
+          {
+            method: "POST",
+            body: {
+              election_id: Number(electionId || 0),
+              tokens: lastTokens,
+              expires_at: lastExpiry,
+            },
+          },
+          "Gagal membuat PDF kartu token."
+        );
+        GV.toast("PDF kartu token diunduh. Periksa jumlah halaman dan kartu sebelum mencetak.", "success");
+      } catch (error) {
+        GV.toast(error.message, "error");
+      } finally {
+        GV.setBusy(printButton, false);
+      }
     });
   }
 

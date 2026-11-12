@@ -5,14 +5,16 @@
     <h1 class="hero-title">Suaramu<br><span class="accent">menentukan</span><br>arah OSIS.</h1>
     <p class="hero-lede">{{with .Election}}{{if .Description}}{{.Description}}{{else}}Satu suara untuk satu masa depan. Pilih pasangan yang paling mewakili suara siswa.{{end}}{{else}}Bilik suara digital dibuka hanya selama periode pemilihan berlangsung. Simpan token Anda dan masuk saat siap memilih.{{end}}</p>
 
+    {{if .Notice}}<div class="alert alert-{{.NoticeKind}} home-notice" role="status">{{.Notice}}</div>{{end}}
+
     <dl class="hero-facts">
       <div class="hero-fact">
         <dt>Status</dt>
-        <dd{{if not .IsOpen}} class="small"{{end}}>{{if .IsOpen}}Berlangsung{{else}}Belum dibuka{{end}}</dd>
+        <dd{{if not .IsOpen}} class="small"{{end}}>{{if .IsOpen}}Berlangsung{{else}}{{with .Election}}{{.StatusLabel}}{{else}}Belum dibuka{{end}}{{end}}</dd>
       </div>
       <div class="hero-fact">
         <dt>Pasangan calon</dt>
-        <dd>{{if .IsOpen}}{{.CandidateCount}}{{else}}-{{end}}</dd>
+        <dd>{{with .Election}}{{.CandidateCount}}{{else}}-{{end}}</dd>
       </div>
       <div class="hero-fact">
         <dt>Periode</dt>
@@ -25,42 +27,96 @@
     </dl>
   </div>
 
+  {{if .ResultsVisible}}
+  <aside class="access-panel results-preview" aria-labelledby="preview-title">
+    <div class="panel-kicker">
+      <span>{{if .ResultsFinal}}Hasil akhir{{else}}Hasil sementara{{end}}</span>
+      {{if .ResultsLive}}<span class="live-indicator" data-public-live data-state="live"><i></i><span data-public-live-text>Live tersambung</span></span>{{else}}<strong>Publik</strong>{{end}}
+    </div>
+    {{if .Results.Candidates}}
+    {{with index .Results.Candidates 0}}
+    <p class="preview-label">Perolehan tertinggi</p>
+    <div class="preview-leader">
+      <span class="preview-number" data-public-leader-number>{{printf "%02d" .CandidateNumber}}</span>
+      <div class="preview-leader-copy">
+        <h2 id="preview-title" data-public-leader-chairman>{{.ChairmanName}}</h2>
+        <p data-public-leader-vice>{{.ViceChairmanName}}</p>
+      </div>
+    </div>
+    <div class="preview-figures">
+      <div><strong data-public-leader-votes>{{.Votes}}</strong><span>suara</span></div>
+      <div><strong data-public-leader-pct>{{pct .Percentage}}</strong><span>dari suara sah</span></div>
+    </div>
+    {{end}}
+    {{else}}
+    <p class="preview-empty">Belum ada suara yang masuk.</p>
+    {{end}}
+    <div class="preview-total">
+      <span>Total suara sah</span>
+      <strong data-public-total>{{.Results.TotalVotes}}</strong>
+    </div>
+    {{if .IsOpen}}<a class="btn btn-primary btn-block" href="/token">Masuk ke bilik suara</a>{{end}}
+    <p class="preview-note">{{if .ResultsFinal}}Pemilihan sudah ditutup. Hasil ditampilkan tanpa token atau identitas pemilih.{{else}}Angka diperbarui saat suara masuk. Tidak ada token atau identitas pemilih yang ditampilkan.{{end}}</p>
+  </aside>
+  {{else}}
   <aside class="access-panel" aria-labelledby="access-title">
     <div class="panel-kicker">
       <span>Akses pemilih</span>
       <strong>{{if .IsOpen}}Token aktif{{else}}Belum tersedia{{end}}</strong>
     </div>
-    <h2 id="access-title">{{if .IsOpen}}Masukkan token Anda.{{else}}Bilik suara tertutup.{{end}}</h2>
-    <p>{{if .IsOpen}}Token terdiri dari lima karakter, diberikan oleh panitia, dan hanya dapat dipakai satu kali.{{else}}Pantau pengumuman panitia untuk jadwal pemilihan berikutnya.{{end}}</p>
-
-    {{if .IsOpen}}
-      {{if .Notice}}<div class="alert alert-{{.NoticeKind}}" role="alert">{{.Notice}}</div>{{end}}
-      <form class="access-form" id="token-form" aria-describedby="token-help">
-        <label class="token-label" for="token-input">Token pemilih <span>5 karakter</span></label>
-        <input class="token-input" id="token-input" name="token" type="text" inputmode="text" autocomplete="one-time-code" autocapitalize="characters" spellcheck="false" maxlength="5" pattern="[A-Za-z0-9]{5}" placeholder="A1B2C" required aria-describedby="token-help token-error">
-        <div class="token-help" id="token-help">
-          <span>Sekali pakai</span>
-          <span>Tanpa data pribadi</span>
-        </div>
-        <p class="form-message" id="token-error" role="alert" hidden></p>
-        <button class="btn btn-primary btn-lg btn-block" type="submit" id="token-submit">
-          Masuk ke bilik suara
-          <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
-        </button>
-      </form>
-      <div class="access-note">
-        <svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M12 3 5 6v5c0 4.8 2.9 8.2 7 10 4.1-1.8 7-5.2 7-10V6l-7-3Z"/><path d="m9 12 2 2 4-4"/></svg>
-        <span>Pilihan Anda tidak pernah disimpan bersama token, sesi, atau identitas pemilih.</span>
-      </div>
-    {{else}}
-      <div class="access-closed">
-        <strong>Belum ada pemilihan aktif.</strong>
-        <p>Halaman ini akan otomatis menampilkan bilik suara begitu panitia membuka periode pemilihan.</p>
-        <a class="btn btn-ghost btn-sm" href="/">Muat ulang halaman</a>
-      </div>
-    {{end}}
+    <h2 id="access-title">{{if .IsOpen}}Siap memilih?{{else}}Bilik suara tertutup.{{end}}</h2>
+    <p>{{if .IsOpen}}Halaman token hanya dipakai untuk memasukkan token lima karakter dari panitia. Token sekali pakai dan tidak menyimpan identitas pemilih.{{else}}Hasil suara belum dibuka untuk publik. Pantau pengumuman panitia untuk informasi berikutnya.{{end}}</p>
+    {{if .IsOpen}}<a class="btn btn-primary btn-lg btn-block" href="/token">Masukkan token</a>{{end}}
+    <div class="access-note">
+      <svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M12 3 5 6v5c0 4.8 2.9 8.2 7 10 4.1-1.8 7-5.2 7-10V6l-7-3Z"/><path d="m9 12 2 2 4-4"/></svg>
+      <span>Pilihan Anda tidak pernah disimpan bersama token, sesi, atau identitas pemilih.</span>
+    </div>
   </aside>
+  {{end}}
 </section>
+
+{{if .ResultsVisible}}
+<section class="public-results-section" aria-labelledby="public-results-title">
+  <div class="public-results-inner" data-public-results data-election-id="{{.Election.ID}}" data-live="{{if .ResultsLive}}true{{else}}false{{end}}">
+    <header class="public-results-head">
+      <div>
+        <p class="eyebrow">{{if .ResultsFinal}}Hasil akhir{{else}}Hitungan sementara{{end}}</p>
+        <h2 id="public-results-title">{{if .ResultsFinal}}Hasil pemilihan.{{else}}Suara yang masuk.{{end}}</h2>
+        <p>{{if .ResultsFinal}}Rekapitulasi akhir suara sah untuk periode ini.{{else}}Angka diperbarui otomatis setiap ada suara baru.{{end}}</p>
+      </div>
+      <div class="public-results-summary">
+        <div><strong data-public-total>{{.Results.TotalVotes}}</strong><span>suara sah</span></div>
+        {{if .ResultsLive}}<span class="live-indicator" data-public-live data-state="live"><i></i><span data-public-live-text>Live tersambung</span></span>{{else}}<span class="public-tag">Publik</span>{{end}}
+      </div>
+    </header>
+
+    {{if .Results.Candidates}}
+    <ol class="result-list result-list-public" data-public-list>
+      {{range .Results.Candidates}}
+      <li class="result-item" data-candidate-id="{{.CandidateID}}" data-candidate-number="{{.CandidateNumber}}" data-votes="{{.Votes}}">
+        <span class="result-rank" data-public-rank>#{{.Rank}}</span>
+        <div class="result-main">
+          <div class="result-line">
+            <span class="result-number">{{printf "%02d" .CandidateNumber}}</span>
+            <span class="result-names"><strong>{{.ChairmanName}}</strong><span>{{.ViceChairmanName}}</span></span>
+          </div>
+          <div class="result-bar"><progress max="100" value="{{.Percentage}}" aria-label="Persentase suara {{.ChairmanName}}">{{pct .Percentage}}</progress></div>
+          <div class="result-meta"><span data-public-votes>{{.Votes}} suara</span><span data-public-pct>{{pct .Percentage}}</span></div>
+        </div>
+      </li>
+      {{end}}
+    </ol>
+    {{else}}
+    <div class="empty-state">
+      <span class="empty-mark" aria-hidden="true">0</span>
+      <strong>Belum ada suara yang masuk.</strong>
+      <p>Hasil akan tampil setelah pemilih mulai mengirim suara.</p>
+    </div>
+    {{end}}
+    <p class="public-results-note">Suara bersifat anonim. Halaman ini tidak menampilkan token, sesi, atau identitas pemilih.</p>
+  </div>
+</section>
+{{end}}
 
 <section class="home-strip" aria-labelledby="how-title">
   <div class="how-section">
@@ -73,7 +129,7 @@
       <li class="step-item">
         <span class="step-no">01</span>
         <strong>Masukkan token</strong>
-        <p>Gunakan token lima karakter yang diberikan panitia. Jangan bagikan ke orang lain.</p>
+        <p>Buka halaman token, lalu masukkan token lima karakter dari panitia. Jangan bagikan ke orang lain.</p>
       </li>
       <li class="step-item">
         <span class="step-no">02</span>
