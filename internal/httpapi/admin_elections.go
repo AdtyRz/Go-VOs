@@ -138,6 +138,56 @@ func (s *Server) apiAdminElectionUpdate(w http.ResponseWriter, r *http.Request) 
 	writeData(w, http.StatusOK, map[string]any{"election": updated})
 }
 
+func (s *Server) apiAdminElectionVisibility(w http.ResponseWriter, r *http.Request) {
+	id, ok := parseID(r.PathValue("id"))
+	if !ok {
+		writeAPIError(w, http.StatusBadRequest, "VALIDATION", "ID pemilihan tidak valid.")
+		return
+	}
+	sess := currentSession(r)
+	election, err := s.st.GetElection(r.Context(), sess.Admin.SchoolID, id)
+	if err != nil {
+		writeStoreError(w, err)
+		return
+	}
+	var input struct {
+		ResultsVisibility string `json:"results_visibility"`
+	}
+	r.Body = http.MaxBytesReader(w, r.Body, 2048)
+	if err := decodeJSON(w, r, &input, 2048); err != nil {
+		writeAPIError(w, http.StatusBadRequest, "VALIDATION", "Pengaturan tampilan hasil tidak valid.")
+		return
+	}
+	visibility := strings.ToUpper(strings.TrimSpace(input.ResultsVisibility))
+	if visibility != "LIVE" && visibility != "FINAL" {
+		writeAPIError(w, http.StatusBadRequest, "VALIDATION", "Tampilan hasil harus LIVE atau FINAL.")
+		return
+	}
+	if election.Status != models.ElectionActive && election.Status != models.ElectionPaused {
+		writeAPIError(w, http.StatusConflict, "CONFLICT", "Hasil publik hanya dapat diubah saat pemilihan aktif atau dijeda.")
+		return
+	}
+	if election.ResultsVisibility == visibility {
+		writeData(w, http.StatusOK, map[string]any{"election": election})
+		return
+	}
+	if err := s.st.SetElectionResultsVisibility(r.Context(), sess.Admin.SchoolID, id, visibility); err != nil {
+		writeStoreError(w, err)
+		return
+	}
+	s.audit(r, "ELECTION_VISIBILITY", "election", &id, map[string]any{
+		"from": election.ResultsVisibility,
+		"to":   visibility,
+	})
+	s.broadcastLive(r.Context(), id)
+	updated, err := s.st.GetElection(r.Context(), sess.Admin.SchoolID, id)
+	if err != nil {
+		writeStoreError(w, err)
+		return
+	}
+	writeData(w, http.StatusOK, map[string]any{"election": updated})
+}
+
 func (s *Server) apiAdminElectionAction(action string) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		id, ok := parseID(r.PathValue("id"))

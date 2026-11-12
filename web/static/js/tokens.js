@@ -18,6 +18,7 @@
   const printButton = document.querySelector("[data-print-tokens]");
   let lastTokens = [];
   let lastExpiry = "";
+  let printed = false;
 
   function tokenChecks() {
     return GV.qsa("[data-token-check]");
@@ -86,6 +87,7 @@
 
         lastTokens = Array.isArray(data.tokens) ? data.tokens : [];
         lastExpiry = data.expires_at || "";
+        printed = false;
         GV.closeDialog(generateDialog);
         if (generatedCount) generatedCount.textContent = String(lastTokens.length);
         if (generatedExpiry) generatedExpiry.textContent = GV.formatDateTime(lastExpiry);
@@ -185,6 +187,7 @@
           },
           "Gagal membuat PDF kartu token."
         );
+        printed = true;
         GV.toast("PDF kartu token diunduh. Periksa jumlah halaman dan kartu sebelum mencetak.", "success");
       } catch (error) {
         GV.toast(error.message, "error");
@@ -196,11 +199,27 @@
 
   const complete = document.querySelector("[data-complete-generation]");
   if (complete) {
-    complete.addEventListener("click", () => {
+    complete.addEventListener("click", async () => {
+      if (lastTokens.length && !printed) {
+        const confirmed = await GV.confirmAction({
+          title: "Belum unduh kartu token?",
+          message:
+            "PDF kartu token belum diunduh. Setelah halaman dimuat ulang, nilai token tidak dapat ditampilkan atau dicetak lagi. Lanjutkan tanpa mengunduh?",
+          confirmLabel: "Ya, muat ulang",
+          danger: true,
+        });
+        if (!confirmed) return;
+      }
       lastTokens = [];
       window.location.reload();
     });
   }
+
+  window.addEventListener("beforeunload", (event) => {
+    if (!lastTokens.length) return;
+    event.preventDefault();
+    event.returnValue = "";
+  });
 
   tokenChecks().forEach((checkbox) => checkbox.addEventListener("change", syncSelection));
   if (checkAll) {

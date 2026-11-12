@@ -1205,6 +1205,13 @@
   color: var(--brand-secondary);
 }
 
+.winner-number.is-empty {
+  font-size: 2.4rem;
+  line-height: 1;
+  letter-spacing: 0;
+  color: color-mix(in srgb, var(--hero-ink) 32%, transparent);
+}
+
 .winner-copy h2 {
   font-family: var(--font-display);
   font-size: clamp(1.5rem, 3vw, 2.25rem);
@@ -1362,6 +1369,87 @@
   padding: 0.7rem 1.1rem;
   border-top: 1px solid var(--line);
   background: color-mix(in srgb, var(--surface-muted) 45%, transparent);
+}
+
+.visibility-control {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-top: 1rem;
+  padding: 0.8rem 0.9rem;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  background: var(--surface-muted);
+}
+
+.visibility-control-page {
+  margin-top: 0;
+  margin-bottom: 1.1rem;
+  padding: 0.95rem 1.1rem;
+  background: var(--surface);
+}
+
+.visibility-control-copy {
+  display: grid;
+  gap: 0.15rem;
+  min-width: 0;
+}
+
+.visibility-control-copy strong {
+  font-size: 0.82rem;
+  font-weight: 650;
+}
+
+.visibility-control-copy span {
+  color: var(--muted);
+  font-size: 0.74rem;
+  line-height: 1.45;
+}
+
+.toggle-switch {
+  position: relative;
+  flex: none;
+  width: 46px;
+  height: 26px;
+  padding: 0;
+  border: 1px solid var(--line-strong);
+  border-radius: 999px;
+  background: var(--surface);
+  cursor: pointer;
+  transition: background-color 0.18s var(--ease), border-color 0.18s var(--ease);
+}
+
+.toggle-switch-thumb {
+  position: absolute;
+  top: 50%;
+  left: 3px;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.28);
+  transform: translateY(-50%);
+  transition: transform 0.18s var(--ease);
+}
+
+.toggle-switch[aria-checked="true"] {
+  border-color: var(--success);
+  background: var(--success);
+}
+
+.toggle-switch[aria-checked="true"] .toggle-switch-thumb {
+  transform: translate(20px, -50%);
+}
+
+.toggle-switch:focus-visible {
+  outline: 3px solid var(--brand-primary);
+  outline-offset: 2px;
+}
+
+.toggle-switch:disabled {
+  opacity: 0.55;
+  cursor: wait;
 }
 
 .school-layout {

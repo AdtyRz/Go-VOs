@@ -53,12 +53,24 @@ func (s *Server) broadcastLive(ctx context.Context, electionID int64) {
 		slog.Error("broadcast live: election", "error", err)
 		return
 	}
-	payload, err := s.buildLivePayloadCtx(ctx, election)
+	adminPayload, err := s.buildLivePayloadCtx(ctx, election)
 	if err != nil {
-		slog.Error("broadcast live: payload", "error", err)
+		slog.Error("broadcast live: admin payload", "error", err)
+	} else {
+		s.hub.BroadcastAdmins(electionID, ws.Event{Event: "vote_update", Data: adminPayload})
+	}
+
+	now := time.Now().UTC()
+	if !publicResultsVisible(election, now) {
+		s.hub.BroadcastPublic(electionID, ws.Event{Event: "results_hidden"})
 		return
 	}
-	s.hub.Broadcast(electionID, ws.Event{Event: "vote_update", Data: payload})
+	publicPayload, err := s.buildPublicResults(ctx, election, now)
+	if err != nil {
+		slog.Error("broadcast live: public payload", "error", err)
+		return
+	}
+	s.hub.BroadcastPublic(electionID, ws.Event{Event: "vote_update", Data: publicPayload})
 }
 
 func (s *Server) buildLivePayloadCtx(ctx context.Context, election *models.Election) (*livePayload, error) {
@@ -183,8 +195,12 @@ func (s *Server) exportResultsCSV(w http.ResponseWriter, school *models.School, 
 	_ = cw.Write([]string{})
 	_ = cw.Write([]string{"Peringkat", "Nomor Urut", "Calon Ketua", "Calon Wakil Ketua", "Suara", "Persentase"})
 	for _, c := range results.Candidates {
+		rank := "-"
+		if c.Rank > 0 {
+			rank = strconv.Itoa(c.Rank)
+		}
 		_ = cw.Write([]string{
-			strconv.Itoa(c.Rank),
+			rank,
 			strconv.Itoa(c.CandidateNumber),
 			csvText(c.ChairmanName),
 			csvText(c.ViceChairmanName),

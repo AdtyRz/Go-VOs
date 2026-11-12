@@ -9,7 +9,7 @@ Aplikasi pemungutan suara elektronik OSIS berbasis Go dan MySQL. Antarmuka siswa
 - Suara anonim: tabel `votes` hanya menyimpan pemilihan, calon, dan waktu.
 - Token dibuat massal, dicabut, dipantau, diekspor, dan dicetak sebagai kartu A4 oleh panitia.
 - Panel admin untuk sekolah, tema, periode pemilihan, pasangan calon, token, hasil, dan jejak audit.
-- Hasil publik di beranda: live saat pemilihan berlangsung atau final setelah ditutup, sesuai pengaturan visibilitas.
+- Hasil publik di beranda: live saat pemilihan berlangsung atau final setelah ditutup, dengan tombol nyala/mati realtime dari panel panitia.
 - Hasil langsung melalui WebSocket serta ekspor CSV dan laporan PDF.
 - Empat tema: Batik, Indonesia, Wayang, dan Modern Glass.
 - Kata sandi Argon2id, hash token HMAC, cookie HttpOnly, CSRF, pembatasan laju, dan header keamanan.
@@ -56,7 +56,7 @@ Prasyarat: Docker Engine dan Docker Compose v2.
 6. Login dengan akun admin dari `.env`, lalu buat token dari menu Token Pemilih.
 7. Bagikan alamat `http://localhost:8080/token` kepada siswa. Halaman beranda menampilkan informasi pemilihan dan hasil publik sesuai pengaturan visibilitas.
 
-Tidak ada token demo yang dibuat otomatis. Token asli hanya ditampilkan sekali setelah dibuat, jadi simpan, ekspor, atau cetak kartu token sebelum menutup jendela. Halaman lama `/vote` tetap tersedia sebagai pengalihan ke `/token`.
+Tidak ada token demo yang dibuat otomatis. Token asli hanya ditampilkan sekali setelah dibuat, jadi simpan, ekspor, atau cetak kartu token sebelum menutup jendela. Tombol `Unduh PDF kartu token` hanya tersedia selama dialog hasil generate masih terbuka; batch lama tidak dapat dicetak ulang karena nilai token disimpan sebagai hash. Halaman lama `/vote` tetap tersedia sebagai pengalihan ke `/token`.
 
 Untuk menghentikan layanan:
 
@@ -100,7 +100,9 @@ Pengaturan `results_visibility` pada pemilihan menentukan tampilan publik:
 - `LIVE`: hasil tampil di beranda sejak pemilihan aktif dan diperbarui melalui WebSocket `/ws/public/results`.
 - `FINAL`: hasil disembunyikan dari publik sampai pemilihan ditutup, lalu ditampilkan sebagai hasil akhir.
 
-Hasil publik hanya memuat nomor urut, nama pasangan, perolehan suara, peringkat, persentase, dan total suara sah. Token, sesi, dan identitas pemilih tidak pernah ditampilkan. Panitia dapat mengunduh kartu token A4 dari menu Token Pemilih; setiap halaman memuat 28 kartu.
+Panitia dapat menyalakan atau mematikan hasil publik realtime lewat tombol `Hasil publik realtime` di halaman Periode pemilihan atau Hasil pemilihan. Tombol ini tersedia selama status pemilihan `ACTIVE` atau `PAUSED`, jadi periode tidak perlu diedit ulang. Saat dimatikan, beranda siswa langsung menyembunyikan hasil dan koneksi WebSocket publik menerima event `results_hidden`; saat dinyalakan, hasil kembali tampil dan diperbarui otomatis.
+
+Hasil publik hanya memuat nomor urut, nama pasangan, perolehan suara, peringkat, persentase, dan total suara sah. Calon tanpa suara ditampilkan dengan tanda `-`, bukan peringkat `#1`. Token, sesi, dan identitas pemilih tidak pernah ditampilkan. Panitia dapat mengunduh kartu token A4 dari menu Token Pemilih; setiap halaman memuat 28 kartu.
 
 ## Konfigurasi
 

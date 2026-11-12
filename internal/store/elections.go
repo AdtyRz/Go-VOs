@@ -158,6 +158,32 @@ func (s *Store) UpdateElection(ctx context.Context, schoolID, id int64, in model
 	return nil
 }
 
+func (s *Store) SetElectionResultsVisibility(ctx context.Context, schoolID, id int64, visibility string) error {
+	res, err := s.db.ExecContext(ctx, `
+		UPDATE elections SET results_visibility=?
+		WHERE id=? AND school_id=? AND status IN ('ACTIVE','PAUSED')`,
+		visibility, id, schoolID)
+	if err != nil {
+		return err
+	}
+	affected, _ := res.RowsAffected()
+	if affected > 0 {
+		return nil
+	}
+	var status models.ElectionStatus
+	err = s.db.QueryRowContext(ctx, `SELECT status FROM elections WHERE id=? AND school_id=?`, id, schoolID).Scan(&status)
+	if errors.Is(err, sql.ErrNoRows) {
+		return ErrNotFound
+	}
+	if err != nil {
+		return err
+	}
+	if status != models.ElectionActive && status != models.ElectionPaused {
+		return ErrConflict
+	}
+	return nil
+}
+
 func (s *Store) countActiveCandidates(ctx context.Context, electionID int64) (int, error) {
 	var n int
 	err := s.db.QueryRowContext(ctx, `SELECT COUNT(*) FROM candidates WHERE election_id=? AND is_active=1`, electionID).Scan(&n)

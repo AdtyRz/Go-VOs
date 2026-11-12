@@ -140,6 +140,7 @@ func (s *Server) Handler() http.Handler {
 	mux.Handle("GET /api/v1/admin/elections", admin(s.apiAdminElections))
 	mux.Handle("POST /api/v1/admin/elections", admin(s.apiAdminElectionCreate))
 	mux.Handle("PUT /api/v1/admin/elections/{id}", admin(s.apiAdminElectionUpdate))
+	mux.Handle("POST /api/v1/admin/elections/{id}/visibility", admin(s.apiAdminElectionVisibility))
 	mux.Handle("POST /api/v1/admin/elections/{id}/schedule", admin(s.apiAdminElectionAction("schedule")))
 	mux.Handle("POST /api/v1/admin/elections/{id}/start", admin(s.apiAdminElectionAction("start")))
 	mux.Handle("POST /api/v1/admin/elections/{id}/pause", admin(s.apiAdminElectionAction("pause")))

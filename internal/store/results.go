@@ -57,6 +57,10 @@ func (s *Store) GetResults(ctx context.Context, election *models.Election) (*mod
 	rank := 0
 	prevVotes := int64(-1)
 	for i := range candidates {
+		if candidates[i].Votes == 0 {
+			candidates[i].Rank = 0
+			continue
+		}
 		if candidates[i].Votes != prevVotes {
 			rank = i + 1
 			prevVotes = candidates[i].Votes

@@ -8,13 +8,24 @@
   <div class="page-head-actions">
     {{with .Election}}
     <span class="badge badge-{{statusclass .Status}}">{{.StatusLabel}}</span>
-    <button class="btn btn-ghost btn-sm" type="button" data-export-results="csv">Ekspor CSV</button>
-    <button class="btn btn-primary btn-sm" type="button" data-export-results="pdf">Unduh PDF</button>
+    <button class="btn btn-ghost btn-sm" type="button" data-export-results="csv">Ekspor laporan CSV</button>
+    <button class="btn btn-primary btn-sm" type="button" data-export-results="pdf">Unduh laporan PDF</button>
     {{end}}
   </div>
 </div>
 
 {{if .Election}}
+{{if or (eq .Election.Status "ACTIVE") (eq .Election.Status "PAUSED")}}
+<div class="visibility-control visibility-control-page" data-visibility-control data-election-id="{{.Election.ID}}" data-visibility="{{.Election.ResultsVisibility}}">
+  <div class="visibility-control-copy">
+    <strong>Hasil publik realtime</strong>
+    <span data-visibility-label>{{if eq .Election.ResultsVisibility "LIVE"}}Aktif - hasil tampil di beranda siswa dan diperbarui otomatis{{else}}Nonaktif - hasil disembunyikan dari beranda sampai pemilihan ditutup{{end}}</span>
+  </div>
+  <button class="toggle-switch" type="button" role="switch" aria-checked="{{if eq .Election.ResultsVisibility "LIVE"}}true{{else}}false{{end}}" aria-label="Tampilkan hasil publik realtime" data-visibility-toggle>
+    <span class="toggle-switch-thumb"></span>
+  </button>
+</div>
+{{end}}
 <div class="result-overview">
   <section class="winner-card" aria-labelledby="winner-title">
     <div class="winner-flag">
@@ -22,15 +33,15 @@
       <span class="live-indicator" data-live-indicator data-state="idle"><i></i><span data-live-text>Menyiapkan live</span></span>
     </div>
     <div class="winner-main">
-      <span class="winner-number" data-winner-number>{{if .Results.Candidates}}{{with index .Results.Candidates 0}}{{printf "%02d" .CandidateNumber}}{{end}}{{else}}-{{end}}</span>
+      <span class="winner-number{{if not .Results.TotalVotes}} is-empty{{end}}" data-winner-number>{{if and .Results.Candidates .Results.TotalVotes}}{{with index .Results.Candidates 0}}{{printf "%02d" .CandidateNumber}}{{end}}{{else}}-{{end}}</span>
       <div class="winner-copy">
-        <h2 id="winner-title" data-winner-chairman>{{if .Results.Candidates}}{{with index .Results.Candidates 0}}{{.ChairmanName}}{{end}}{{else}}Belum ada calon{{end}}</h2>
-        <p data-winner-vice>{{if .Results.Candidates}}{{with index .Results.Candidates 0}}{{.ViceChairmanName}}{{end}}{{else}}-{{end}}</p>
+        <h2 id="winner-title" data-winner-chairman>{{if and .Results.Candidates .Results.TotalVotes}}{{with index .Results.Candidates 0}}{{.ChairmanName}}{{end}}{{else if .Results.Candidates}}Belum ada suara{{else}}Belum ada calon{{end}}</h2>
+        <p data-winner-vice>{{if and .Results.Candidates .Results.TotalVotes}}{{with index .Results.Candidates 0}}{{.ViceChairmanName}}{{end}}{{else if .Results.Candidates}}Menunggu suara pertama{{else}}-{{end}}</p>
       </div>
     </div>
     <div class="winner-figures">
-      <div><strong data-winner-votes>{{if .Results.Candidates}}{{with index .Results.Candidates 0}}{{.Votes}}{{end}}{{else}}0{{end}}</strong><span>suara</span></div>
-      <div><strong data-winner-pct>{{if .Results.Candidates}}{{with index .Results.Candidates 0}}{{pct .Percentage}}{{end}}{{else}}0,0%{{end}}</strong><span>dari suara sah</span></div>
+      <div><strong data-winner-votes>{{if and .Results.Candidates .Results.TotalVotes}}{{with index .Results.Candidates 0}}{{.Votes}}{{end}}{{else}}0{{end}}</strong><span>suara</span></div>
+      <div><strong data-winner-pct>{{if and .Results.Candidates .Results.TotalVotes}}{{with index .Results.Candidates 0}}{{pct .Percentage}}{{end}}{{else}}0,0%{{end}}</strong><span>dari suara sah</span></div>
     </div>
     <p class="winner-note" data-winner-note>{{if eq .Election.ResultsVisibility "LIVE"}}Angka sementara, diperbarui otomatis saat suara masuk. Hasil juga tampil di beranda publik.{{else}}Angka tetap diperbarui untuk panitia. Publik baru melihat hasil setelah pemilihan ditutup.{{end}}</p>
   </section>
@@ -62,7 +73,7 @@
     <ol class="result-list result-list-large">
       {{range .Results.Candidates}}
       <li class="result-item" data-candidate-id="{{.CandidateID}}">
-        <span class="result-rank" data-rank>#{{.Rank}}</span>
+        <span class="result-rank" data-rank>{{if .Rank}}#{{.Rank}}{{else}}-{{end}}</span>
         <div class="result-main">
           <div class="result-line">
             <span class="result-number">{{printf "%02d" .CandidateNumber}}</span>

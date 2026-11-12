@@ -168,9 +168,15 @@
 
     function render(payload) {
       if (!payload || !Array.isArray(payload.candidates)) return;
+      const hasVotes = Number(payload.total_votes || 0) > 0;
       qsa("[data-public-total]").forEach((node) => {
         node.textContent = numberFormat.format(payload.total_votes || 0);
       });
+
+      const leaderBlock = qs("[data-public-leader-block]");
+      const emptyPreview = qs("[data-public-empty]");
+      if (leaderBlock) leaderBlock.hidden = !hasVotes;
+      if (emptyPreview) emptyPreview.hidden = hasVotes;
 
       const ordered = [];
       payload.candidates.forEach((candidate) => {
@@ -182,7 +188,7 @@
         const percent = item.querySelector("[data-public-pct]");
         const bar = item.querySelector("progress");
         const formattedPercent = percentFormat.format(candidate.percentage || 0) + "%";
-        if (rank) rank.textContent = "#" + candidate.rank;
+        if (rank) rank.textContent = candidate.rank > 0 ? "#" + candidate.rank : "-";
         if (votes) votes.textContent = numberFormat.format(candidate.votes || 0) + " suara";
         if (percent) percent.textContent = formattedPercent;
         if (bar) {
@@ -258,6 +264,14 @@
         }
         if (message && (message.event === "snapshot" || message.event === "vote_update")) {
           render(message.data);
+          return;
+        }
+        if (message && message.event === "results_hidden") {
+          stopped = true;
+          window.clearTimeout(retryTimer);
+          setLiveState("offline", "Hasil disembunyikan panitia");
+          if (socket) socket.close();
+          window.setTimeout(() => window.location.reload(), 600);
         }
       });
 

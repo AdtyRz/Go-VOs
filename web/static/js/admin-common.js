@@ -283,7 +283,7 @@
     const item = makeElement("li", "result-item");
     item.dataset.candidateId = String(candidate.candidate_id);
 
-    item.appendChild(makeElement("span", "result-rank", "#" + candidate.rank));
+    item.appendChild(makeElement("span", "result-rank", Number(candidate.rank) > 0 ? "#" + candidate.rank : "-"));
     const main = makeElement("div", "result-main");
     const line = makeElement("div", "result-line");
     line.appendChild(makeElement("span", "result-number", String(candidate.candidate_number).padStart(2, "0")));
@@ -334,12 +334,13 @@
     }
 
     const candidates = payload.candidates || [];
-    const winner = candidates[0];
+    const winner = Number(payload.total_votes || 0) > 0 ? candidates[0] : null;
     const winnerNumber = qs("[data-winner-number]");
     if (winnerNumber) {
+      winnerNumber.classList.toggle("is-empty", !winner);
       winnerNumber.textContent = winner ? String(winner.candidate_number).padStart(2, "0") : "-";
-      qs("[data-winner-chairman]").textContent = winner ? winner.chairman_name : "Belum ada calon";
-      qs("[data-winner-vice]").textContent = winner ? winner.vice_chairman_name : "-";
+      qs("[data-winner-chairman]").textContent = winner ? winner.chairman_name : (candidates.length ? "Belum ada suara" : "Belum ada calon");
+      qs("[data-winner-vice]").textContent = winner ? winner.vice_chairman_name : (candidates.length ? "Menunggu suara pertama" : "-");
       qs("[data-winner-votes]").textContent = winner ? formatNumber(winner.votes) : "0";
       qs("[data-winner-pct]").textContent = winner ? formatPercent(winner.percentage) : "0,0%";
     }
@@ -437,6 +438,56 @@
     });
   }
 
+  function initVisibilityControls() {
+    qsa("[data-visibility-control]").forEach((control) => {
+      const toggle = qs("[data-visibility-toggle]", control);
+      if (!toggle) return;
+      toggle.addEventListener("click", async () => {
+        const electionId = Number(control.dataset.electionId || 0);
+        if (!electionId) return;
+        const next = toggle.getAttribute("aria-checked") === "true" ? "FINAL" : "LIVE";
+        const pageWide = control.classList.contains("visibility-control-page");
+        setBusy(toggle, true);
+        try {
+          await api("/api/v1/admin/elections/" + electionId + "/visibility", {
+            method: "POST",
+            body: { results_visibility: next },
+          });
+          toggle.setAttribute("aria-checked", next === "LIVE" ? "true" : "false");
+          control.dataset.visibility = next;
+          const label = qs("[data-visibility-label]", control);
+          if (label) {
+            label.textContent =
+              next === "LIVE"
+                ? pageWide
+                  ? "Aktif - hasil tampil di beranda siswa dan diperbarui otomatis"
+                  : "Aktif - hasil tampil di beranda siswa"
+                : pageWide
+                  ? "Nonaktif - hasil disembunyikan dari beranda sampai pemilihan ditutup"
+                  : "Nonaktif - hasil disembunyikan dari beranda";
+          }
+          const scope = control.closest(".election-card") || control;
+          qsa("[data-visibility-badge]", scope).forEach((badge) => {
+            badge.textContent = next === "LIVE" ? "Hasil publik" : "Hasil privat";
+          });
+          qsa("[data-visibility-meta]", scope).forEach((meta) => {
+            meta.textContent = next === "LIVE" ? "Publik (live)" : "Privat sampai ditutup";
+          });
+          toast(
+            next === "LIVE"
+              ? "Hasil publik diaktifkan. Beranda siswa menampilkan hasil secara realtime."
+              : "Hasil publik dinonaktifkan. Beranda siswa menyembunyikan hasil sampai pemilihan ditutup.",
+            "success"
+          );
+        } catch (error) {
+          toast(error.message, "error");
+        } finally {
+          setBusy(toggle, false);
+        }
+      });
+    });
+  }
+
   function initShell() {
     const body = document.body;
     const navToggle = qs("[data-nav-toggle]");
@@ -495,6 +546,8 @@
         closeDialog(dialog);
       });
     });
+
+    initVisibilityControls();
   }
 
   window.GV = {

@@ -23,7 +23,7 @@
   <article class="election-card status-{{statusclass .Status}}" data-election-id="{{.ID}}" data-name="{{.Name}}" data-period="{{.Period}}" data-description="{{.Description}}" data-start="{{inputdate .StartAt}}" data-end="{{inputdate .EndAt}}" data-visibility="{{.ResultsVisibility}}">
     <div class="election-card-status">
       <span class="badge badge-{{statusclass .Status}}">{{.StatusLabel}}</span>
-      {{if eq .ResultsVisibility "LIVE"}}<span class="badge no-dot">Hasil publik</span>{{else}}<span class="badge no-dot">Hasil privat</span>{{end}}
+      {{if eq .ResultsVisibility "LIVE"}}<span class="badge no-dot" data-visibility-badge>Hasil publik</span>{{else}}<span class="badge no-dot" data-visibility-badge>Hasil privat</span>{{end}}
       {{if eq .Status "ACTIVE"}}<span class="live-indicator" data-state="live"><i></i><span>Berlangsung</span></span>{{end}}
     </div>
     <div class="election-card-body">
@@ -34,8 +34,19 @@
         <div class="meta-block"><dt>Mulai</dt><dd>{{shortdatetime .StartAt}}</dd></div>
         <div class="meta-block"><dt>Selesai</dt><dd>{{shortdatetime .EndAt}}</dd></div>
         <div class="meta-block"><dt>Pasangan calon</dt><dd>{{.CandidateCount}} aktif</dd></div>
-        <div class="meta-block"><dt>Hasil</dt><dd>{{if eq .ResultsVisibility "LIVE"}}Publik (live){{else}}Privat sampai ditutup{{end}}</dd></div>
+        <div class="meta-block"><dt>Hasil</dt><dd data-visibility-meta>{{if eq .ResultsVisibility "LIVE"}}Publik (live){{else}}Privat sampai ditutup{{end}}</dd></div>
       </dl>
+      {{if or (eq .Status "ACTIVE") (eq .Status "PAUSED")}}
+      <div class="visibility-control" data-visibility-control data-election-id="{{.ID}}" data-visibility="{{.ResultsVisibility}}">
+        <div class="visibility-control-copy">
+          <strong>Hasil publik realtime</strong>
+          <span data-visibility-label>{{if eq .ResultsVisibility "LIVE"}}Aktif - hasil tampil di beranda siswa{{else}}Nonaktif - hasil disembunyikan dari beranda{{end}}</span>
+        </div>
+        <button class="toggle-switch" type="button" role="switch" aria-checked="{{if eq .ResultsVisibility "LIVE"}}true{{else}}false{{end}}" aria-label="Tampilkan hasil publik realtime" data-visibility-toggle>
+          <span class="toggle-switch-thumb"></span>
+        </button>
+      </div>
+      {{end}}
     </div>
     <div class="election-card-actions">
       <a class="btn btn-ghost btn-sm" href="/admin?election_id={{.ID}}">Ringkasan</a>

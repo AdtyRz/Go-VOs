@@ -50,7 +50,7 @@
     <ol class="result-list">
       {{range .Results.Candidates}}
       <li class="result-item" data-candidate-id="{{.CandidateID}}">
-        <span class="result-rank" data-rank>#{{.Rank}}</span>
+        <span class="result-rank" data-rank>{{if .Rank}}#{{.Rank}}{{else}}-{{end}}</span>
         <div class="result-main">
           <div class="result-line">
             <span class="result-number">{{printf "%02d" .CandidateNumber}}</span>

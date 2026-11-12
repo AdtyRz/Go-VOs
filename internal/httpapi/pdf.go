@@ -178,7 +178,11 @@ func (s *Server) exportResultsPDF(w http.ResponseWriter, school *models.School, 
 		}
 		pdf.SetFont("dmsans", "B", 9)
 		pdf.SetFillColor(255, 255, 255)
-		pdf.CellFormat(colW[0], 9, "#"+strconv.Itoa(c.Rank), "B", 0, "L", false, 0, "")
+		rank := "-"
+		if c.Rank > 0 {
+			rank = "#" + strconv.Itoa(c.Rank)
+		}
+		pdf.CellFormat(colW[0], 9, rank, "B", 0, "L", false, 0, "")
 		pdf.SetFont("dmsans", "B", 9)
 		pdf.CellFormat(colW[1], 9, fmt.Sprintf("%02d", c.CandidateNumber), "B", 0, "L", false, 0, "")
 		pdf.SetFont("dmsans", "B", 9)

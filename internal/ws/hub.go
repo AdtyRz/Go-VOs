@@ -86,7 +86,15 @@ func (h *Hub) unregister(c *Client) {
 	})
 }
 
-func (h *Hub) Broadcast(electionID int64, event Event) {
+func (h *Hub) BroadcastAdmins(electionID int64, event Event) {
+	h.broadcast(electionID, false, event)
+}
+
+func (h *Hub) BroadcastPublic(electionID int64, event Event) {
+	h.broadcast(electionID, true, event)
+}
+
+func (h *Hub) broadcast(electionID int64, public bool, event Event) {
 	payload, err := json.Marshal(event)
 	if err != nil {
 		slog.Error("websocket marshal", "error", err)
@@ -95,7 +103,7 @@ func (h *Hub) Broadcast(electionID int64, event Event) {
 	h.mu.RLock()
 	targets := make([]*Client, 0, len(h.clients))
 	for c := range h.clients {
-		if c.ElectionID == electionID {
+		if c.ElectionID == electionID && (c.AdminID == 0) == public {
 			targets = append(targets, c)
 		}
 	}

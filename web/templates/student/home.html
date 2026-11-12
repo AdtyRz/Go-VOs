@@ -29,27 +29,31 @@
 
   {{if .ResultsVisible}}
   <aside class="access-panel results-preview" aria-labelledby="preview-title">
+    <h2 class="sr-only" id="preview-title">Hasil pemilihan</h2>
     <div class="panel-kicker">
       <span>{{if .ResultsFinal}}Hasil akhir{{else}}Hasil sementara{{end}}</span>
       {{if .ResultsLive}}<span class="live-indicator" data-public-live data-state="live"><i></i><span data-public-live-text>Live tersambung</span></span>{{else}}<strong>Publik</strong>{{end}}
     </div>
     {{if .Results.Candidates}}
-    {{with index .Results.Candidates 0}}
-    <p class="preview-label">Perolehan tertinggi</p>
-    <div class="preview-leader">
-      <span class="preview-number" data-public-leader-number>{{printf "%02d" .CandidateNumber}}</span>
-      <div class="preview-leader-copy">
-        <h2 id="preview-title" data-public-leader-chairman>{{.ChairmanName}}</h2>
-        <p data-public-leader-vice>{{.ViceChairmanName}}</p>
+    <div data-public-leader-block{{if not .Results.TotalVotes}} hidden{{end}}>
+      <p class="preview-label">Perolehan tertinggi</p>
+      {{with index .Results.Candidates 0}}
+      <div class="preview-leader">
+        <span class="preview-number" data-public-leader-number>{{printf "%02d" .CandidateNumber}}</span>
+        <div class="preview-leader-copy">
+          <h2 data-public-leader-chairman>{{.ChairmanName}}</h2>
+          <p data-public-leader-vice>{{.ViceChairmanName}}</p>
+        </div>
       </div>
+      <div class="preview-figures">
+        <div><strong data-public-leader-votes>{{.Votes}}</strong><span>suara</span></div>
+        <div><strong data-public-leader-pct>{{pct .Percentage}}</strong><span>dari suara sah</span></div>
+      </div>
+      {{end}}
     </div>
-    <div class="preview-figures">
-      <div><strong data-public-leader-votes>{{.Votes}}</strong><span>suara</span></div>
-      <div><strong data-public-leader-pct>{{pct .Percentage}}</strong><span>dari suara sah</span></div>
-    </div>
-    {{end}}
+    <p class="preview-empty" data-public-empty{{if .Results.TotalVotes}} hidden{{end}}>Belum ada suara yang masuk.</p>
     {{else}}
-    <p class="preview-empty">Belum ada suara yang masuk.</p>
+    <p class="preview-empty">Belum ada pasangan calon.</p>
     {{end}}
     <div class="preview-total">
       <span>Total suara sah</span>
@@ -94,7 +98,7 @@
     <ol class="result-list result-list-public" data-public-list>
       {{range .Results.Candidates}}
       <li class="result-item" data-candidate-id="{{.CandidateID}}" data-candidate-number="{{.CandidateNumber}}" data-votes="{{.Votes}}">
-        <span class="result-rank" data-public-rank>#{{.Rank}}</span>
+        <span class="result-rank" data-public-rank>{{if .Rank}}#{{.Rank}}{{else}}-{{end}}</span>
         <div class="result-main">
           <div class="result-line">
             <span class="result-number">{{printf "%02d" .CandidateNumber}}</span>
