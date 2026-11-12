@@ -1,0 +1,1390 @@
+body.theme-glass {
+  --font-display: "Manrope", "DM Sans", system-ui, sans-serif;
+  --font-body: "DM Sans", "Segoe UI", system-ui, sans-serif;
+
+  --bg: #eef3f8;
+  --bg-deep: #e2eaf2;
+  --surface: rgba(255, 255, 255, 0.66);
+  --surface-raised: rgba(255, 255, 255, 0.84);
+  --surface-muted: rgba(236, 243, 250, 0.72);
+  --ink: #102033;
+  --ink-soft: #34485f;
+  --muted: #64768a;
+  --faint: #8d9dae;
+  --line: rgba(125, 152, 180, 0.24);
+  --line-strong: rgba(94, 124, 156, 0.4);
+
+  --brand-tint: rgba(219, 233, 247, 0.7);
+  --brand-soft: rgba(202, 222, 241, 0.82);
+  --brand-text: color-mix(in srgb, var(--brand-primary) 86%, #0f2033);
+
+  --radius-xs: 8px;
+  --radius-sm: 12px;
+  --radius-md: 22px;
+  --radius-lg: 30px;
+  --radius-pill: 999px;
+
+  --shadow-sm: 0 3px 10px rgba(31, 55, 82, 0.06);
+  --shadow-md: 0 22px 54px rgba(31, 55, 82, 0.12);
+  --shadow-lg: 0 40px 100px rgba(31, 55, 82, 0.18);
+
+  --glass-fill: rgba(255, 255, 255, 0.58);
+  --glass-fill-strong: rgba(255, 255, 255, 0.78);
+  --glass-edge: rgba(255, 255, 255, 0.86);
+  --glass-line: rgba(125, 152, 180, 0.22);
+  --glass-shadow: 0 24px 60px rgba(31, 55, 82, 0.13), inset 0 1px 0 rgba(255, 255, 255, 0.9);
+  --glass-blur: blur(26px) saturate(150%);
+  color-scheme: light;
+}
+
+.theme-glass .theme-atmosphere {
+  background:
+    radial-gradient(ellipse at 8% 4%, rgba(96, 165, 250, 0.2), transparent 38%),
+    radial-gradient(ellipse at 92% 12%, color-mix(in srgb, var(--brand-secondary) 16%, transparent), transparent 34%),
+    radial-gradient(ellipse at 50% 100%, rgba(56, 189, 248, 0.13), transparent 46%),
+    linear-gradient(180deg, #f4f8fc, #e8eff6);
+}
+
+.theme-glass .atmo-pattern {
+  position: absolute;
+  inset: 0;
+  opacity: 0.55;
+  background-image:
+    linear-gradient(rgba(126, 156, 186, 0.09) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(126, 156, 186, 0.09) 1px, transparent 1px);
+  background-size: 72px 72px;
+  mask-image: radial-gradient(ellipse at 50% 20%, #000, transparent 78%);
+  -webkit-mask-image: radial-gradient(ellipse at 50% 20%, #000, transparent 78%);
+}
+
+.theme-glass .atmo-glow {
+  position: absolute;
+  top: -20vh;
+  left: 10vw;
+  width: 46vw;
+  height: 46vw;
+  border-radius: 50%;
+  background: radial-gradient(circle, color-mix(in srgb, var(--brand-primary) 14%, transparent), transparent 64%);
+  filter: blur(12px);
+}
+
+.theme-glass .atmo-frame {
+  position: absolute;
+  top: 18vh;
+  right: -10vw;
+  width: 34vw;
+  height: 34vw;
+  border: 1px solid rgba(255, 255, 255, 0.7);
+  border-radius: 50%;
+  box-shadow: 0 0 0 40px rgba(255, 255, 255, 0.14), 0 0 0 120px rgba(255, 255, 255, 0.07);
+}
+
+.theme-glass h1,
+.theme-glass h2,
+.theme-glass .page-title,
+.theme-glass .hero-title,
+.theme-glass .ballot-head h1,
+.theme-glass .success-ticket h1 {
+  font-family: "Manrope", "DM Sans", system-ui, sans-serif;
+  font-weight: 800;
+  letter-spacing: -0.05em;
+}
+
+.theme-glass .eyebrow {
+  gap: 0.55rem;
+  color: var(--muted);
+  font-size: 0.63rem;
+  letter-spacing: 0.2em;
+}
+
+.theme-glass .eyebrow::before {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--brand-primary);
+  box-shadow: 0 0 0 4px rgba(255, 255, 255, 0.62);
+  opacity: 1;
+}
+
+.theme-glass .site-topbar {
+  position: sticky;
+  top: 0.9rem;
+  z-index: 30;
+  width: min(100% - (var(--gutter) * 1.4), var(--container));
+  margin-top: 0.9rem;
+  padding: 0.7rem 1rem 0.7rem 1.15rem;
+  border: 1px solid var(--glass-edge);
+  border-radius: var(--radius-pill);
+  background: var(--glass-fill);
+  box-shadow: 0 12px 34px rgba(31, 55, 82, 0.1), inset 0 1px 0 #fff;
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+}
+
+.theme-glass .site-brand .logo-mark {
+  width: 42px;
+  height: 42px;
+  border: 1px solid rgba(255, 255, 255, 0.9);
+  background:
+    linear-gradient(140deg, rgba(255, 255, 255, 0.9), rgba(219, 234, 248, 0.7));
+  color: var(--brand-text);
+  box-shadow: 0 4px 12px rgba(31, 55, 82, 0.1);
+}
+
+.theme-glass .site-brand-text strong {
+  font-family: "Manrope", sans-serif;
+  font-size: 0.94rem;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+}
+
+.theme-glass .site-brand-text span {
+  color: var(--faint);
+  font-size: 0.57rem;
+  letter-spacing: 0.2em;
+}
+
+.theme-glass .topbar-context {
+  color: var(--faint);
+  font-size: 0.57rem;
+  letter-spacing: 0.18em;
+}
+
+.theme-glass .topbar-context::before {
+  width: 1px;
+  height: 26px;
+  background: var(--line);
+}
+
+.theme-glass .home-main {
+  grid-template-columns: minmax(0, 1.08fr) minmax(0, 0.92fr);
+  align-items: start;
+  gap: clamp(1.6rem, 4vw, 4.5rem);
+  padding-top: clamp(3rem, 7vw, 6.5rem);
+}
+
+.theme-glass .hero {
+  padding-top: clamp(0.5rem, 2vw, 1.5rem);
+}
+
+.theme-glass .hero-title {
+  margin-top: clamp(1.2rem, 2.4vw, 1.8rem);
+  font-size: clamp(3rem, 7.2vw, 6.2rem);
+  font-weight: 800;
+  line-height: 0.92;
+  letter-spacing: -0.062em;
+}
+
+.theme-glass .hero-title .accent {
+  display: inline-block;
+  margin-block: 0.12em 0.08em;
+  padding: 0.01em 0.2em 0.06em;
+  border: 1px solid rgba(255, 255, 255, 0.9);
+  border-radius: var(--radius-pill);
+  background:
+    linear-gradient(120deg, rgba(255, 255, 255, 0.82), rgba(215, 232, 247, 0.54));
+  color: var(--brand-text);
+  font-weight: 400;
+  letter-spacing: -0.045em;
+  box-shadow: inset 0 1px 0 #fff, 0 12px 30px rgba(31, 55, 82, 0.1);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+}
+
+.theme-glass .hero-lede {
+  max-width: 50ch;
+  margin-top: clamp(1.2rem, 2.4vw, 1.7rem);
+  padding: 1rem 1.2rem;
+  border: 1px solid rgba(255, 255, 255, 0.8);
+  border-left: 1px solid rgba(255, 255, 255, 0.8);
+  border-radius: 0 var(--radius-md) var(--radius-md) 0;
+  background: rgba(255, 255, 255, 0.34);
+  color: var(--ink-soft);
+  font-size: clamp(0.95rem, 1.4vw, 1.04rem);
+  line-height: 1.65;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+.theme-glass .hero-facts {
+  gap: 0.55rem;
+  margin-top: clamp(1.4rem, 2.6vw, 2rem);
+}
+
+.theme-glass .hero-fact {
+  min-width: 0;
+  padding: 0.7rem 0.9rem;
+  border: 1px solid rgba(255, 255, 255, 0.8);
+  border-radius: var(--radius-sm);
+  background: rgba(255, 255, 255, 0.46);
+  box-shadow: inset 0 1px 0 #fff;
+  flex: 1 1 120px;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+.theme-glass .hero-fact dt {
+  color: var(--faint);
+  font-size: 0.56rem;
+  letter-spacing: 0.15em;
+}
+
+.theme-glass .hero-fact dd {
+  font-family: "Manrope", sans-serif;
+  font-size: clamp(1.05rem, 1.8vw, 1.35rem);
+  font-weight: 800;
+  letter-spacing: -0.03em;
+}
+
+.theme-glass .hero-fact dd.small {
+  font-family: "DM Sans", sans-serif;
+  font-size: 0.78rem;
+  font-weight: 600;
+  letter-spacing: 0;
+}
+
+.theme-glass .access-panel {
+  padding: clamp(1.4rem, 2.8vw, 2rem);
+  border: 1px solid var(--glass-edge);
+  border-radius: var(--radius-lg);
+  background:
+    linear-gradient(160deg, rgba(255, 255, 255, 0.86), rgba(236, 245, 253, 0.56));
+  box-shadow: var(--glass-shadow);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+}
+
+.theme-glass .access-panel::before {
+  inset: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.56);
+  border-radius: calc(var(--radius-lg) - 8px);
+}
+
+.theme-glass .access-panel::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 2rem;
+  width: 64px;
+  height: 3px;
+  border-radius: var(--radius-pill);
+  background: linear-gradient(90deg, var(--brand-primary), var(--brand-secondary));
+}
+
+.theme-glass .panel-kicker {
+  padding-bottom: 0.8rem;
+  border-bottom: 1px solid var(--glass-line);
+  color: var(--faint);
+  font-size: 0.58rem;
+  letter-spacing: 0.18em;
+}
+
+.theme-glass .panel-kicker strong {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.28rem 0.6rem;
+  border: 1px solid rgba(255, 255, 255, 0.8);
+  border-radius: var(--radius-pill);
+  background: rgba(255, 255, 255, 0.62);
+  color: var(--ink-soft);
+  font-size: 0.55rem;
+}
+
+.theme-glass .panel-kicker strong::before {
+  content: "";
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--brand-primary);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--brand-primary) 16%, transparent);
+}
+
+.theme-glass .access-panel h2 {
+  margin-top: 1.5rem;
+  font-size: clamp(1.85rem, 3.1vw, 2.4rem);
+  font-weight: 800;
+  line-height: 1;
+  letter-spacing: -0.05em;
+}
+
+.theme-glass .access-panel > p {
+  margin-top: 0.75rem;
+  color: var(--muted);
+  font-size: 0.85rem;
+}
+
+.theme-glass .token-label {
+  color: var(--ink-soft);
+  font-size: 0.62rem;
+  letter-spacing: 0.16em;
+}
+
+.theme-glass .token-label span {
+  color: var(--faint);
+}
+
+.theme-glass .token-input {
+  height: 76px;
+  border: 1px solid rgba(255, 255, 255, 0.92);
+  border-radius: var(--radius-md);
+  background-color: rgba(255, 255, 255, 0.7);
+  background-image: none;
+  color: var(--ink);
+  font-family: "Manrope", sans-serif;
+  font-size: clamp(2rem, 4vw, 2.55rem);
+  font-weight: 800;
+  letter-spacing: 0.34em;
+  box-shadow: inset 0 2px 8px rgba(44, 74, 105, 0.08);
+}
+
+.theme-glass .token-input:focus {
+  border-color: color-mix(in srgb, var(--brand-primary) 50%, #fff);
+  box-shadow: 0 0 0 4px color-mix(in srgb, var(--brand-primary) 18%, transparent), inset 0 2px 8px rgba(44, 74, 105, 0.08);
+}
+
+.theme-glass .token-input::placeholder {
+  color: var(--faint);
+  font-weight: 400;
+  letter-spacing: 0.3em;
+}
+
+.theme-glass .access-form .btn,
+.theme-glass .choose-btn,
+.theme-glass .success-ticket .btn,
+.theme-glass .btn {
+  border-radius: var(--radius-pill);
+}
+
+.theme-glass .access-form .btn-primary,
+.theme-glass .choose-btn,
+.theme-glass .success-ticket .btn-primary {
+  min-height: 54px;
+  border-color: color-mix(in srgb, var(--brand-primary) 76%, #fff);
+  background:
+    linear-gradient(140deg, color-mix(in srgb, var(--brand-primary) 92%, #fff), var(--brand-primary));
+  color: var(--on-brand);
+  font-size: 0.82rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  box-shadow: 0 14px 28px color-mix(in srgb, var(--brand-primary) 26%, transparent), inset 0 1px 0 rgba(255, 255, 255, 0.35);
+}
+
+.theme-glass .access-form .btn-primary:hover,
+.theme-glass .choose-btn:hover,
+.theme-glass .success-ticket .btn-primary:hover {
+  transform: translateY(-1px);
+  background:
+    linear-gradient(140deg, var(--brand-primary), color-mix(in srgb, var(--brand-primary) 84%, #001427));
+}
+
+.theme-glass .access-note {
+  border-top-color: var(--glass-line);
+  color: var(--muted);
+  font-size: 0.7rem;
+}
+
+.theme-glass .access-note svg {
+  color: var(--brand-text);
+}
+
+.theme-glass .access-closed {
+  border: 1px dashed var(--line-strong);
+  border-radius: var(--radius-md);
+  background: rgba(255, 255, 255, 0.42);
+}
+
+.theme-glass .access-closed strong {
+  font-family: "Manrope", sans-serif;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+}
+
+.theme-glass .home-strip {
+  border: 0;
+  background: transparent;
+}
+
+.theme-glass .how-section {
+  grid-template-columns: minmax(180px, 0.55fr) minmax(0, 2.45fr);
+  gap: clamp(1.5rem, 4vw, 3.5rem);
+  padding-block: clamp(2.4rem, 5vw, 4.5rem);
+}
+
+.theme-glass .how-intro h2 {
+  font-size: clamp(1.6rem, 2.8vw, 2.2rem);
+  font-weight: 800;
+  line-height: 1;
+}
+
+.theme-glass .how-intro p {
+  color: var(--muted);
+  font-size: 0.82rem;
+}
+
+.theme-glass .steps {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.75rem;
+  border-left: 0;
+}
+
+.theme-glass .step-item {
+  position: relative;
+  overflow: hidden;
+  padding: 1.1rem 1.1rem 1.2rem;
+  border: 1px solid var(--glass-edge);
+  border-left: 1px solid var(--glass-edge);
+  border-radius: var(--radius-md);
+  background: var(--glass-fill);
+  box-shadow: var(--glass-shadow);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+}
+
+.theme-glass .step-item .step-no {
+  position: absolute;
+  top: -0.25rem;
+  right: 1.2rem;
+  color: color-mix(in srgb, var(--brand-primary) 12%, transparent);
+  font-family: "Manrope", sans-serif;
+  font-size: 3.2rem;
+  font-weight: 800;
+  line-height: 1;
+  letter-spacing: -0.06em;
+}
+
+.theme-glass .step-item strong {
+  position: relative;
+  display: block;
+  padding-right: 2.4rem;
+  color: var(--ink);
+  font-family: "Manrope", sans-serif;
+  font-size: 0.86rem;
+  font-weight: 800;
+  letter-spacing: -0.015em;
+}
+
+.theme-glass .step-item p {
+  position: relative;
+  margin-top: 0.5rem;
+  color: var(--muted);
+  font-size: 0.75rem;
+  line-height: 1.6;
+}
+
+.theme-glass .site-footer {
+  width: min(100% - (var(--gutter) * 1.4), var(--container));
+  margin: 1.5rem auto 1.4rem;
+  border: 1px solid var(--glass-edge);
+  border-radius: var(--radius-lg);
+  background: var(--glass-fill);
+  box-shadow: var(--glass-shadow);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+}
+
+.theme-glass .footer-inner {
+  width: 100%;
+  padding: 1.4rem clamp(1.1rem, 2.4vw, 1.8rem);
+}
+
+.theme-glass .site-footer .logo-mark {
+  border-color: rgba(255, 255, 255, 0.9);
+  background: rgba(255, 255, 255, 0.55);
+  color: var(--brand-text);
+}
+
+.theme-glass .footer-brand strong,
+.theme-glass .footer-meta strong {
+  font-family: "Manrope", sans-serif;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+}
+
+.theme-glass .footer-brand span,
+.theme-glass .footer-contact,
+.theme-glass .footer-meta {
+  color: var(--muted);
+}
+
+.theme-glass .footer-meta a {
+  color: var(--brand-text);
+}
+
+.theme-glass .ballot-head {
+  padding-bottom: clamp(1.2rem, 3vw, 2rem);
+  border-bottom: 1px solid var(--line);
+}
+
+.theme-glass .ballot-head h1 {
+  font-size: clamp(2.7rem, 6vw, 4.8rem);
+  font-weight: 800;
+  line-height: 0.94;
+  letter-spacing: -0.06em;
+}
+
+.theme-glass .ballot-lede {
+  max-width: 58ch;
+  color: var(--muted);
+}
+
+.theme-glass .ballot-note {
+  padding: 0.6rem 0.9rem;
+  border: 1px solid var(--glass-line);
+  border-radius: var(--radius-pill);
+  background: rgba(255, 255, 255, 0.42);
+  color: var(--muted);
+}
+
+.theme-glass .candidate-list {
+  gap: 0.8rem;
+}
+
+.theme-glass .candidate-row {
+  border: 1px solid var(--glass-edge);
+  border-radius: var(--radius-lg);
+  background: var(--glass-fill);
+  box-shadow: var(--glass-shadow);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+}
+
+.theme-glass .candidate-index {
+  border-right: 1px solid var(--glass-line);
+  background: rgba(255, 255, 255, 0.34);
+}
+
+.theme-glass .candidate-index span {
+  color: var(--faint);
+  letter-spacing: 0.18em;
+}
+
+.theme-glass .candidate-index strong {
+  color: var(--brand-text);
+  font-family: "Manrope", sans-serif;
+  font-weight: 800;
+  letter-spacing: -0.05em;
+}
+
+.theme-glass .candidate-photo {
+  border-radius: var(--radius-md);
+  background: rgba(219, 232, 244, 0.6);
+}
+
+.theme-glass .candidate-monogram {
+  background:
+    radial-gradient(circle at 50% 24%, rgba(255, 255, 255, 0.9), transparent 62%),
+    linear-gradient(150deg, rgba(214, 231, 247, 0.8), rgba(184, 210, 235, 0.55));
+}
+
+.theme-glass .candidate-monogram span {
+  color: var(--brand-text);
+  font-family: "Manrope", sans-serif;
+  font-weight: 800;
+}
+
+.theme-glass .candidate-names h2 {
+  color: var(--ink);
+  font-family: "Manrope", sans-serif;
+  font-size: clamp(1.4rem, 2.4vw, 1.85rem);
+  font-weight: 800;
+  letter-spacing: -0.035em;
+}
+
+.theme-glass .candidate-names h3 {
+  color: var(--muted);
+  font-family: "Manrope", sans-serif;
+  font-size: 0.96rem;
+  font-weight: 600;
+}
+
+.theme-glass .candidate-names .role {
+  color: var(--brand-text);
+  background: rgba(255, 255, 255, 0.6);
+  border-color: rgba(255, 255, 255, 0.86);
+}
+
+.theme-glass .candidate-platform {
+  border-top-color: var(--glass-line);
+}
+
+.theme-glass .candidate-platform h4 {
+  color: var(--faint);
+  letter-spacing: 0.16em;
+}
+
+.theme-glass .candidate-platform p,
+.theme-glass .candidate-platform ul {
+  color: var(--ink-soft);
+}
+
+.theme-glass .candidate-platform li::before {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--brand-primary);
+}
+
+.theme-glass .candidate-foot {
+  border-top-color: var(--glass-line);
+}
+
+.theme-glass .candidate-foot p {
+  color: var(--faint);
+}
+
+.theme-glass .ballot-expiry {
+  border-top-color: var(--line);
+  color: var(--muted);
+}
+
+.theme-glass .success-main {
+  padding-block: clamp(2.4rem, 7vw, 5rem);
+}
+
+.theme-glass .success-ticket {
+  border: 1px solid var(--glass-edge);
+  border-radius: var(--radius-lg);
+  background:
+    radial-gradient(circle at 50% 0, rgba(255, 255, 255, 0.92), transparent 52%),
+    var(--glass-fill);
+  box-shadow: var(--glass-shadow);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+}
+
+.theme-glass .success-ticket h1 {
+  font-size: clamp(2.3rem, 5vw, 3.8rem);
+  font-weight: 800;
+  letter-spacing: -0.055em;
+}
+
+.theme-glass .success-copy {
+  color: var(--muted);
+}
+
+.theme-glass .success-mark {
+  border-color: color-mix(in srgb, var(--brand-primary) 36%, #fff);
+  background: rgba(255, 255, 255, 0.66);
+  color: var(--brand-text);
+  box-shadow: 0 0 0 10px rgba(255, 255, 255, 0.3), 0 18px 40px rgba(31, 55, 82, 0.12);
+}
+
+.theme-glass .success-stamp {
+  border-color: color-mix(in srgb, var(--brand-primary) 44%, #fff);
+  border-radius: var(--radius-pill);
+  color: var(--brand-text);
+  font-family: "Manrope", sans-serif;
+  font-weight: 800;
+  letter-spacing: 0.16em;
+}
+
+.theme-glass .success-rule {
+  color: var(--muted);
+}
+
+.theme-glass .success-rule::before,
+.theme-glass .success-rule::after {
+  background: var(--line);
+}
+
+.theme-glass .error-code {
+  color: color-mix(in srgb, var(--brand-primary) 24%, transparent);
+  font-family: "Manrope", sans-serif;
+  font-weight: 800;
+  letter-spacing: -0.06em;
+}
+
+.theme-glass.admin-shell {
+  --admin-rail-bg: rgba(255, 255, 255, 0.66);
+  --admin-rail-ink: #102033;
+  --admin-rail-muted: #64768a;
+  --admin-rail-line: rgba(125, 152, 180, 0.24);
+  --admin-rail-active: rgba(255, 255, 255, 0.82);
+  --hero-surface: #e8f1fa;
+  --hero-ink: #102033;
+}
+
+.theme-glass.admin-shell {
+  background:
+    radial-gradient(ellipse at 6% 0, rgba(96, 165, 250, 0.14), transparent 32%),
+    radial-gradient(ellipse at 100% 8%, color-mix(in srgb, var(--brand-secondary) 12%, transparent), transparent 30%),
+    linear-gradient(180deg, #f1f6fa, #e8eff6);
+}
+
+.theme-glass .admin-frame {
+  grid-template-columns: calc(var(--sidebar-width) + 1.25rem) minmax(0, 1fr);
+}
+
+.theme-glass .admin-sidebar {
+  top: 1rem;
+  height: calc(100vh - 2rem);
+  margin: 1rem 0 1rem 0.75rem;
+  padding: 1rem 0.85rem;
+  border: 1px solid var(--glass-edge);
+  border-radius: var(--radius-lg);
+  background:
+    linear-gradient(170deg, rgba(255, 255, 255, 0.82), rgba(233, 242, 251, 0.58));
+  box-shadow: var(--glass-shadow);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+}
+
+.theme-glass .admin-brand {
+  padding: 0.2rem 0.3rem 1rem;
+  border-bottom-color: var(--glass-line);
+  color: var(--ink);
+}
+
+.theme-glass .admin-brand .logo-mark {
+  border-color: rgba(255, 255, 255, 0.9);
+  background: linear-gradient(140deg, #ffffff, rgba(212, 230, 246, 0.7));
+  color: var(--brand-text);
+  box-shadow: 0 4px 12px rgba(31, 55, 82, 0.1);
+}
+
+.theme-glass .admin-brand-text strong {
+  font-family: "Manrope", sans-serif;
+  font-size: 0.9rem;
+  font-weight: 800;
+  letter-spacing: -0.025em;
+}
+
+.theme-glass .admin-brand-text span {
+  color: var(--faint);
+}
+
+.theme-glass .admin-nav {
+  gap: 0.25rem;
+}
+
+.theme-glass .nav-label {
+  color: var(--faint);
+  letter-spacing: 0.2em;
+}
+
+.theme-glass .nav-link {
+  padding: 0.62rem 0.7rem;
+  border-radius: var(--radius-pill);
+  color: var(--muted);
+  font-size: 0.8rem;
+}
+
+.theme-glass .nav-link:hover {
+  background: rgba(255, 255, 255, 0.56);
+  color: var(--ink);
+}
+
+.theme-glass .nav-link.is-active {
+  border-color: rgba(255, 255, 255, 0.94);
+  background: rgba(255, 255, 255, 0.82);
+  color: var(--ink);
+  box-shadow: 0 8px 20px rgba(31, 55, 82, 0.08), inset 0 1px 0 #fff;
+}
+
+.theme-glass .nav-link.is-active::before {
+  left: -0.3rem;
+  width: 4px;
+  height: 18px;
+  border-radius: var(--radius-pill);
+  background: var(--brand-primary);
+}
+
+.theme-glass .admin-sidebar-foot {
+  border-top-color: var(--glass-line);
+}
+
+.theme-glass .admin-identity .avatar {
+  background: rgba(255, 255, 255, 0.7);
+  color: var(--brand-text);
+}
+
+.theme-glass .admin-identity small {
+  color: var(--faint);
+}
+
+.theme-glass .admin-sidebar-foot .btn {
+  --btn-fg: var(--muted);
+  --btn-border: var(--glass-line);
+  border-radius: var(--radius-pill);
+}
+
+.theme-glass .admin-sidebar-foot .btn:hover {
+  --btn-fg: var(--ink);
+}
+
+.theme-glass .admin-topbar {
+  top: 1rem;
+  z-index: 30;
+  min-height: 62px;
+  margin: 1rem 1rem 0 0.25rem;
+  padding: 0.55rem 0.75rem 0.55rem 1.1rem;
+  border: 1px solid var(--glass-edge);
+  border-radius: var(--radius-pill);
+  background: rgba(255, 255, 255, 0.62);
+  box-shadow: 0 12px 32px rgba(31, 55, 82, 0.09), inset 0 1px 0 #fff;
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+}
+
+.theme-glass .admin-topbar label {
+  color: var(--faint);
+}
+
+.theme-glass .election-switch {
+  padding: 0.16rem 0.2rem 0.16rem 0.75rem;
+  border-color: var(--glass-line);
+  border-radius: var(--radius-pill);
+  background: rgba(255, 255, 255, 0.62);
+}
+
+.theme-glass .election-switch select {
+  color: var(--ink);
+}
+
+.theme-glass .topbar-actions .btn,
+.theme-glass .admin-topbar .btn {
+  border-radius: var(--radius-pill);
+}
+
+.theme-glass .admin-main {
+  max-width: 1460px;
+  padding-top: clamp(1.6rem, 3.4vw, 3rem);
+}
+
+.theme-glass .page-head {
+  padding-bottom: 1.25rem;
+  border-bottom: 1px solid var(--line);
+}
+
+.theme-glass .page-title {
+  font-family: "Manrope", sans-serif;
+  font-size: clamp(2.3rem, 4.4vw, 3.9rem);
+  font-weight: 800;
+  line-height: 0.95;
+  letter-spacing: -0.058em;
+}
+
+.theme-glass .page-sub {
+  color: var(--muted);
+}
+
+.theme-glass .page-head-copy .eyebrow {
+  color: var(--faint);
+}
+
+.theme-glass .stat-grid {
+  gap: 0.75rem;
+}
+
+.theme-glass .stat-card {
+  padding: 1.05rem 1.15rem 1.2rem;
+  border: 1px solid var(--glass-edge);
+  border-radius: var(--radius-md);
+  background: var(--glass-fill);
+  box-shadow: var(--glass-shadow);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+}
+
+.theme-glass .stat-card-primary {
+  border-color: color-mix(in srgb, var(--brand-primary) 34%, #fff);
+  background:
+    linear-gradient(145deg, color-mix(in srgb, var(--brand-primary) 92%, #fff), var(--brand-primary));
+  color: var(--on-brand);
+  box-shadow: 0 20px 44px color-mix(in srgb, var(--brand-primary) 24%, transparent), inset 0 1px 0 rgba(255, 255, 255, 0.4);
+}
+
+.theme-glass .stat-card-primary .stat-label,
+.theme-glass .stat-card-primary .stat-meta {
+  color: color-mix(in srgb, var(--on-brand) 74%, transparent);
+}
+
+.theme-glass .stat-label {
+  color: var(--faint);
+  letter-spacing: 0.16em;
+}
+
+.theme-glass .stat-value {
+  font-family: "Manrope", sans-serif;
+  font-weight: 800;
+  letter-spacing: -0.055em;
+}
+
+.theme-glass .stat-meta {
+  color: var(--muted);
+}
+
+.theme-glass .card-panel {
+  border: 1px solid var(--glass-edge);
+  border-radius: var(--radius-md);
+  background: var(--glass-fill);
+  box-shadow: var(--glass-shadow);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+}
+
+.theme-glass .panel-head {
+  border-bottom-color: var(--glass-line);
+}
+
+.theme-glass .panel-title {
+  color: var(--ink);
+  font-family: "Manrope", sans-serif;
+  font-size: clamp(1.1rem, 1.8vw, 1.32rem);
+  font-weight: 800;
+  letter-spacing: -0.035em;
+}
+
+.theme-glass .panel-meta,
+.theme-glass .panel-head p {
+  color: var(--faint);
+}
+
+.theme-glass .result-item {
+  border-color: var(--glass-line);
+}
+
+.theme-glass .result-rank {
+  color: var(--faint);
+  font-family: "Manrope", sans-serif;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+}
+
+.theme-glass .result-number {
+  border: 1px solid rgba(255, 255, 255, 0.9);
+  border-radius: var(--radius-sm);
+  background: rgba(255, 255, 255, 0.64);
+  color: var(--brand-text);
+  font-family: "Manrope", sans-serif;
+  font-weight: 800;
+}
+
+.theme-glass .result-names strong {
+  color: var(--ink);
+  font-weight: 700;
+}
+
+.theme-glass .result-meta span:last-child {
+  color: var(--brand-text);
+  font-weight: 700;
+}
+
+.theme-glass .result-bar progress {
+  height: 8px;
+  border-radius: var(--radius-pill);
+  background: rgba(179, 200, 220, 0.4);
+  overflow: hidden;
+}
+
+.theme-glass .result-bar progress::-webkit-progress-bar {
+  border-radius: var(--radius-pill);
+  background: rgba(179, 200, 220, 0.4);
+}
+
+.theme-glass .result-bar progress::-webkit-progress-value {
+  border-radius: var(--radius-pill);
+  background: linear-gradient(90deg, color-mix(in srgb, var(--brand-primary) 55%, #fff), var(--brand-primary));
+}
+
+.theme-glass .result-bar progress::-moz-progress-bar {
+  border-radius: var(--radius-pill);
+  background: linear-gradient(90deg, color-mix(in srgb, var(--brand-primary) 55%, #fff), var(--brand-primary));
+}
+
+.theme-glass .winner-card {
+  border: 1px solid var(--glass-edge);
+  border-radius: var(--radius-md);
+  background:
+    radial-gradient(circle at 50% 0, rgba(255, 255, 255, 0.86), transparent 54%),
+    var(--glass-fill);
+  box-shadow: var(--glass-shadow);
+}
+
+.theme-glass .winner-number {
+  color: var(--brand-text);
+  font-family: "Manrope", sans-serif;
+  font-weight: 800;
+  letter-spacing: -0.06em;
+}
+
+.theme-glass .data-toolbar {
+  border-bottom-color: var(--glass-line);
+}
+
+.theme-glass .filter-tab {
+  border-radius: var(--radius-pill);
+  border-color: var(--glass-line);
+  background: rgba(255, 255, 255, 0.38);
+  color: var(--muted);
+}
+
+.theme-glass .filter-tab.is-active {
+  border-color: rgba(255, 255, 255, 0.94);
+  background: var(--brand-primary);
+  color: var(--on-brand);
+  box-shadow: 0 8px 18px color-mix(in srgb, var(--brand-primary) 24%, transparent);
+}
+
+.theme-glass .data-panel {
+  border-radius: var(--radius-md);
+  overflow: hidden;
+}
+
+.theme-glass .data-panel .table th {
+  border-bottom-color: var(--line-strong);
+  color: var(--faint);
+}
+
+.theme-glass .data-panel .table tr:hover td {
+  background: rgba(255, 255, 255, 0.32);
+}
+
+.theme-glass .badge {
+  border-color: rgba(255, 255, 255, 0.8);
+  border-radius: var(--radius-pill);
+}
+
+.theme-glass .dialog-card {
+  border: 1px solid var(--glass-edge);
+  border-radius: var(--radius-lg);
+  background:
+    linear-gradient(165deg, rgba(255, 255, 255, 0.94), rgba(236, 245, 253, 0.84));
+  box-shadow: 0 40px 100px rgba(15, 38, 64, 0.28), inset 0 1px 0 #fff;
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+}
+
+.theme-glass .dialog-head {
+  border-bottom-color: var(--glass-line);
+}
+
+.theme-glass .dialog-head h2 {
+  font-family: "Manrope", sans-serif;
+  font-weight: 800;
+  letter-spacing: -0.04em;
+}
+
+.theme-glass .dialog-close {
+  border-color: var(--glass-line);
+  background: rgba(255, 255, 255, 0.64);
+}
+
+.theme-glass .dialog-actions {
+  border-top-color: var(--glass-line);
+}
+
+.theme-glass .toast {
+  border: 1px solid var(--glass-edge);
+  border-left: 3px solid var(--brand-primary);
+  border-radius: var(--radius-sm);
+  background: rgba(255, 255, 255, 0.86);
+  box-shadow: var(--shadow-md);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+}
+
+.theme-glass .theme-card {
+  border-color: var(--glass-line);
+  border-radius: var(--radius-md);
+  background: rgba(255, 255, 255, 0.38);
+}
+
+.theme-glass .theme-card:has(input:checked) {
+  border-color: color-mix(in srgb, var(--brand-primary) 48%, #fff);
+  background: rgba(255, 255, 255, 0.72);
+  box-shadow: 0 12px 28px rgba(31, 55, 82, 0.1);
+}
+
+.theme-glass .theme-preview {
+  border-radius: var(--radius-sm);
+}
+
+.theme-glass .input,
+.theme-glass .select,
+.theme-glass .textarea {
+  border-color: var(--glass-line);
+  border-radius: var(--radius-sm);
+  background: rgba(255, 255, 255, 0.66);
+}
+
+.theme-glass .input:focus,
+.theme-glass .select:focus,
+.theme-glass .textarea:focus {
+  border-color: color-mix(in srgb, var(--brand-primary) 52%, #fff);
+  background: rgba(255, 255, 255, 0.82);
+  box-shadow: 0 0 0 4px color-mix(in srgb, var(--brand-primary) 14%, transparent);
+}
+
+.theme-glass .btn {
+  border-radius: var(--radius-pill);
+}
+
+.theme-glass .btn-primary {
+  border-color: color-mix(in srgb, var(--brand-primary) 72%, #fff);
+  background: linear-gradient(140deg, color-mix(in srgb, var(--brand-primary) 92%, #fff), var(--brand-primary));
+  box-shadow: 0 12px 26px color-mix(in srgb, var(--brand-primary) 22%, transparent), inset 0 1px 0 rgba(255, 255, 255, 0.35);
+}
+
+.theme-glass .btn-secondary {
+  --btn-bg: rgba(255, 255, 255, 0.62);
+  --btn-fg: var(--ink-soft);
+}
+
+.theme-glass .btn-ghost {
+  --btn-border: var(--glass-line);
+  --btn-bg: rgba(255, 255, 255, 0.32);
+}
+
+.theme-glass .btn-danger {
+  --btn-border: color-mix(in srgb, var(--danger) 30%, transparent);
+}
+
+.theme-glass .admin-footer {
+  border-top-color: var(--line);
+  color: var(--faint);
+}
+
+.theme-glass.auth-shell {
+  --hero-ink: #102033;
+  --admin-rail-bg: #e8f1fa;
+}
+
+.theme-glass .auth-atmosphere {
+  background:
+    radial-gradient(ellipse at 12% 12%, rgba(96, 165, 250, 0.18), transparent 38%),
+    radial-gradient(ellipse at 88% 84%, color-mix(in srgb, var(--brand-secondary) 14%, transparent), transparent 36%),
+    linear-gradient(180deg, #f3f8fc, #e7eff7);
+}
+
+.theme-glass .auth-atmosphere span {
+  border-color: rgba(255, 255, 255, 0.7);
+  box-shadow: 0 0 0 30px rgba(255, 255, 255, 0.12);
+}
+
+.theme-glass .auth-frame {
+  gap: 0;
+  padding: clamp(0.8rem, 2vw, 1.4rem);
+}
+
+.theme-glass .auth-brand {
+  overflow: hidden;
+  border: 1px solid var(--glass-edge);
+  border-radius: var(--radius-lg);
+  background:
+    radial-gradient(ellipse at 18% 8%, rgba(255, 255, 255, 0.92), transparent 42%),
+    radial-gradient(ellipse at 82% 76%, color-mix(in srgb, var(--brand-primary) 18%, transparent), transparent 50%),
+    linear-gradient(155deg, rgba(230, 242, 253, 0.92), rgba(199, 222, 243, 0.68));
+  color: var(--ink);
+  box-shadow: var(--glass-shadow);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+}
+
+.theme-glass .auth-brand::after {
+  right: -16%;
+  bottom: -22%;
+  width: 70%;
+  border-color: rgba(255, 255, 255, 0.72);
+  box-shadow: 0 0 0 34px rgba(255, 255, 255, 0.16), 0 0 0 74px rgba(255, 255, 255, 0.09);
+}
+
+.theme-glass .auth-brand .logo-mark {
+  border-color: rgba(255, 255, 255, 0.94);
+  background: rgba(255, 255, 255, 0.58);
+  color: var(--brand-text);
+  box-shadow: 0 8px 20px rgba(31, 55, 82, 0.1);
+}
+
+.theme-glass .auth-brand-label {
+  color: var(--muted);
+}
+
+.theme-glass .auth-brand-copy .eyebrow {
+  color: var(--muted);
+}
+
+.theme-glass .auth-brand-copy .eyebrow::before {
+  background: var(--brand-primary);
+}
+
+.theme-glass .auth-brand-copy h1 {
+  color: var(--ink);
+  font-family: "Manrope", sans-serif;
+  font-size: clamp(2.7rem, 5.6vw, 5.4rem);
+  font-weight: 800;
+  line-height: 0.9;
+  letter-spacing: -0.065em;
+}
+
+.theme-glass .auth-brand-copy > p:last-child {
+  color: var(--ink-soft);
+  font-size: clamp(0.9rem, 1.4vw, 1rem);
+}
+
+.theme-glass .auth-brand-foot {
+  border-top-color: rgba(255, 255, 255, 0.6);
+}
+
+.theme-glass .auth-brand-foot strong {
+  color: var(--ink);
+  font-weight: 700;
+}
+
+.theme-glass .auth-brand-foot span {
+  color: var(--muted);
+}
+
+.theme-glass .auth-panel {
+  background: transparent;
+}
+
+.theme-glass .auth-card {
+  padding: clamp(1.5rem, 3.2vw, 2.4rem);
+  border: 1px solid var(--glass-edge);
+  border-radius: var(--radius-lg);
+  background:
+    linear-gradient(165deg, rgba(255, 255, 255, 0.9), rgba(238, 246, 253, 0.68));
+  box-shadow: var(--glass-shadow);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+}
+
+.theme-glass .auth-card-head h2 {
+  font-family: "Manrope", sans-serif;
+  font-size: clamp(1.9rem, 3.2vw, 2.5rem);
+  font-weight: 800;
+  letter-spacing: -0.055em;
+}
+
+.theme-glass .auth-card-head p:last-child {
+  color: var(--muted);
+}
+
+.theme-glass .auth-security {
+  border: 1px solid var(--glass-line);
+  border-radius: var(--radius-sm);
+  background: rgba(255, 255, 255, 0.42);
+}
+
+.theme-glass .auth-security svg {
+  color: var(--brand-text);
+}
+
+.theme-glass .auth-security p {
+  color: var(--muted);
+}
+
+.theme-glass .auth-links {
+  border-top-color: var(--glass-line);
+}
+
+.theme-glass .auth-links a {
+  color: var(--brand-text);
+}
+
+.theme-glass .auth-foot {
+  color: var(--faint);
+}
+
+@media (max-width: 960px) {
+  .theme-glass .home-main {
+    grid-template-columns: 1fr;
+    gap: 2rem;
+  }
+  .theme-glass .hero-title {
+    font-size: clamp(2.9rem, 10vw, 5rem);
+  }
+  .theme-glass .access-panel {
+    width: min(100%, 560px);
+  }
+  .theme-glass .how-section {
+    grid-template-columns: 1fr;
+  }
+  .theme-glass .footer-inner {
+    grid-template-columns: 1fr;
+  }
+  .theme-glass .footer-meta {
+    text-align: left;
+  }
+}
+
+@media (max-width: 760px) {
+  .theme-glass .site-topbar {
+    top: 0.6rem;
+    margin-top: 0.6rem;
+    padding: 0.55rem 0.7rem;
+  }
+  .theme-glass .topbar-context {
+    display: none;
+  }
+  .theme-glass .home-main {
+    padding-top: clamp(2rem, 8vw, 3rem);
+  }
+  .theme-glass .hero-fact {
+    flex-basis: 46%;
+  }
+  .theme-glass .steps {
+    grid-template-columns: 1fr;
+  }
+  .theme-glass .step-item {
+    grid-template-columns: 1fr;
+    gap: 0.35rem;
+  }
+  .theme-glass .site-footer {
+    margin-bottom: 1rem;
+  }
+  .theme-glass .admin-frame {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .theme-glass .admin-sidebar {
+    top: 0.75rem;
+    height: auto;
+    max-height: calc(100vh - 1.5rem);
+    margin: 0.75rem;
+    border-radius: var(--radius-lg);
+  }
+  .theme-glass .admin-topbar {
+    top: 0.75rem;
+    margin: 0.75rem 0.75rem 0;
+  }
+  .theme-glass .admin-main {
+    padding-inline: 0.9rem;
+  }
+  .theme-glass .auth-frame {
+    gap: 1rem;
+    padding: 0.75rem;
+  }
+  .theme-glass .auth-brand {
+    min-height: auto;
+    padding: 1.4rem;
+  }
+  .theme-glass .auth-brand-copy h1 {
+    font-size: clamp(2.2rem, 9vw, 3.2rem);
+  }
+  .theme-glass .auth-panel {
+    padding: 1.2rem 0 1.5rem;
+  }
+}
+
+@media (prefers-reduced-transparency: reduce) {
+  .theme-glass .site-topbar,
+  .theme-glass .access-panel,
+  .theme-glass .step-item,
+  .theme-glass .site-footer,
+  .theme-glass .candidate-row,
+  .theme-glass .success-ticket,
+  .theme-glass .admin-sidebar,
+  .theme-glass .admin-topbar,
+  .theme-glass .stat-card,
+  .theme-glass .card-panel,
+  .theme-glass .dialog-card,
+  .theme-glass .auth-brand,
+  .theme-glass .auth-card {
+    background: #fbfdff;
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+  }
+}

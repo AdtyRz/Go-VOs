@@ -1,0 +1,155 @@
+{{define "content"}}
+<div class="page-head">
+  <div class="page-head-copy">
+    <p class="eyebrow">Ringkasan pemilihan</p>
+    <h1 class="page-title">Denyut pemilihan,<br>dalam satu layar.</h1>
+    <p class="page-sub">Pantau partisipasi dan perolehan suara saat pemilihan berlangsung. Angka diperbarui otomatis setelah suara tersimpan.</p>
+  </div>
+  <div class="page-head-actions">
+    {{with .Election}}
+    <span class="badge badge-{{statusclass .Status}}">{{.StatusLabel}}</span>
+    <a class="btn btn-ghost btn-sm" href="/admin/results?election_id={{.ID}}">Buka hasil lengkap</a>
+    {{end}}
+  </div>
+</div>
+
+{{if .Election}}
+<div class="stat-grid">
+  <article class="stat-card stat-card-primary">
+    <p class="stat-label">Suara masuk</p>
+    <p class="stat-value" data-stat="votes">{{.Stats.Votes}}</p>
+    <p class="stat-meta">{{.Election.CandidateCount}} pasangan calon aktif</p>
+  </article>
+  <article class="stat-card">
+    <p class="stat-label">Token digunakan</p>
+    <p class="stat-value" data-stat="tokens-used">{{.Stats.Used}}</p>
+    <p class="stat-meta">dari <span data-stat="tokens-total">{{.Stats.Total}}</span> token diterbitkan</p>
+  </article>
+  <article class="stat-card">
+    <p class="stat-label">Partisipasi</p>
+    <p class="stat-value" data-stat="participation">{{pct .Stats.Participation}}</p>
+    <p class="stat-meta">rasio token terpakai</p>
+  </article>
+  <article class="stat-card">
+    <p class="stat-label">Token tersedia</p>
+    <p class="stat-value" data-stat="tokens-available">{{.Stats.Available}}</p>
+    <p class="stat-meta">siap dibagikan panitia</p>
+  </article>
+</div>
+
+<div class="dash-grid">
+  <section class="card-panel live-results" data-live-results aria-labelledby="live-title">
+    <div class="panel-head">
+      <div>
+        <p class="eyebrow">Perolehan suara</p>
+        <h2 class="panel-title" id="live-title">Papan hitung live</h2>
+      </div>
+      <span class="panel-context"><i class="live-dot"></i> Diperbarui <time data-live-updated>{{datetime .Results.UpdatedAt}}</time></span>
+    </div>
+    {{if .Results.Candidates}}
+    <ol class="result-list">
+      {{range .Results.Candidates}}
+      <li class="result-item" data-candidate-id="{{.CandidateID}}">
+        <span class="result-rank" data-rank>#{{.Rank}}</span>
+        <div class="result-main">
+          <div class="result-line">
+            <span class="result-number">{{printf "%02d" .CandidateNumber}}</span>
+            <span class="result-names"><strong>{{.ChairmanName}}</strong><span>{{.ViceChairmanName}}</span></span>
+          </div>
+          <div class="result-bar"><progress max="100" value="{{.Percentage}}" aria-label="Persentase suara {{.ChairmanName}}">{{pct .Percentage}}</progress></div>
+          <div class="result-meta"><span data-votes>{{.Votes}} suara</span><span data-pct>{{pct .Percentage}}</span></div>
+        </div>
+      </li>
+      {{end}}
+    </ol>
+    {{else}}
+    <div class="empty-state empty-state-compact">
+      <span class="empty-mark" aria-hidden="true">0</span>
+      <strong>Belum ada pasangan calon.</strong>
+      <p>Tambahkan pasangan calon sebelum pemilihan dijadwalkan.</p>
+    </div>
+    {{end}}
+    <p class="panel-footnote">Hanya statistik agregat yang dikirim melalui kanal realtime. Tidak ada token, sesi, atau identitas pemilih.</p>
+  </section>
+
+  <aside class="dash-side">
+    <section class="card-panel" aria-labelledby="token-status-title">
+      <div class="panel-head">
+        <div>
+          <p class="eyebrow">Inventaris</p>
+          <h2 class="panel-title" id="token-status-title">Status token</h2>
+        </div>
+        <a class="panel-link" href="/admin/tokens?election_id={{.Election.ID}}">Kelola</a>
+      </div>
+      <dl class="status-breakdown">
+        <div class="status-row">
+          <dt><span class="status-swatch is-used"></span>Sudah dipakai</dt>
+          <dd data-stat="tokens-used">{{.Stats.Used}}</dd>
+        </div>
+        <div class="status-row">
+          <dt><span class="status-swatch is-available"></span>Tersedia</dt>
+          <dd data-stat="tokens-available">{{.Stats.Available}}</dd>
+        </div>
+        <div class="status-row">
+          <dt><span class="status-swatch is-revoked"></span>Dicabut</dt>
+          <dd data-stat="tokens-revoked">{{.Stats.Revoked}}</dd>
+        </div>
+        <div class="status-row">
+          <dt><span class="status-swatch is-expired"></span>Kedaluwarsa</dt>
+          <dd data-stat="tokens-expired">{{.Stats.Expired}}</dd>
+        </div>
+      </dl>
+      <a class="btn btn-secondary btn-sm btn-block" href="/admin/tokens?election_id={{.Election.ID}}">Terbitkan token baru</a>
+    </section>
+
+    <section class="card-panel election-summary" aria-labelledby="election-summary-title">
+      <div class="panel-head">
+        <div>
+          <p class="eyebrow">Periode aktif</p>
+          <h2 class="panel-title" id="election-summary-title">Detail pemilihan</h2>
+        </div>
+      </div>
+      <dl class="meta-grid meta-grid-stack">
+        <div class="meta-block"><dt>Periode</dt><dd>{{.Election.Period}}</dd></div>
+        <div class="meta-block"><dt>Mulai</dt><dd>{{shortdatetime .Election.StartAt}}</dd></div>
+        <div class="meta-block"><dt>Selesai</dt><dd>{{shortdatetime .Election.EndAt}}</dd></div>
+        <div class="meta-block"><dt>Mode hasil</dt><dd>{{if eq .Election.ResultsVisibility "LIVE"}}Live monitoring{{else}}Final setelah ditutup{{end}}</dd></div>
+      </dl>
+      <a class="btn btn-ghost btn-sm btn-block" href="/admin/elections">Atur periode pemilihan</a>
+    </section>
+  </aside>
+</div>
+
+<section class="card-panel activity-panel" aria-labelledby="activity-title">
+  <div class="panel-head">
+    <div>
+      <p class="eyebrow">Jejak terbaru</p>
+      <h2 class="panel-title" id="activity-title">Aktivitas panitia</h2>
+    </div>
+    <a class="panel-link" href="/admin/audit">Lihat semua</a>
+  </div>
+  {{if .Recent}}
+  <ol class="activity-list">
+    {{range .Recent}}
+    <li class="activity-item">
+      <span class="activity-marker" aria-hidden="true"></span>
+      <div class="activity-body">
+        <p><strong>{{.AdminName}}</strong> - {{actionlabel .Action}}</p>
+        <p class="activity-meta">{{.EntityType}}{{if .EntityID}} #{{.EntityID}}{{end}} - {{datetime .CreatedAt}}</p>
+      </div>
+    </li>
+    {{end}}
+  </ol>
+  {{else}}
+  <p class="muted activity-empty">Belum ada aktivitas yang tercatat.</p>
+  {{end}}
+</section>
+{{else}}
+<section class="empty-state empty-state-page">
+  <span class="empty-mark">01</span>
+  <strong>Mulai dengan membuat periode pemilihan.</strong>
+  <p>Setelah periode dibuat, tambahkan minimal dua pasangan calon, lalu jadwalkan atau mulai pemilihan.</p>
+  <a class="btn btn-primary" href="/admin/elections">Buat periode pemilihan</a>
+</section>
+{{end}}
+{{end}}

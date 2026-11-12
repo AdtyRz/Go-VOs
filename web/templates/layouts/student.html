@@ -1,0 +1,71 @@
+{{define "layout"}}<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light">
+  <meta name="theme-color" content="{{if .School}}{{.School.PrimaryColor}}{{else}}#7a4f2a{{end}}">
+  <meta name="csrf-token" content="{{.CSRF}}">
+  <meta name="description" content="{{if .School}}{{if .School.Tagline}}{{.School.Tagline}}{{else}}Pemungutan suara elektronik OSIS {{.School.Name}}.{{end}}{{else}}Pemungutan suara elektronik OSIS.{{end}}">
+  <title>{{.Title}}{{with .School}} - {{.Name}}{{end}}</title>
+  <link rel="icon" href="/static/images/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="/static/css/base.css">
+  <link rel="stylesheet" href="/static/css/student.css">
+  {{with .School}}<link rel="stylesheet" href="/static/css/theme-{{.Theme}}.css">{{end}}
+  <link rel="stylesheet" href="/theme.css">
+  <script defer src="/static/js/student.js"></script>
+  {{range .Scripts}}<script defer src="/static/js/{{.}}"></script>{{end}}
+</head>
+<body class="student-site{{with .School}} theme-{{.Theme}}{{end}}" data-page="{{.Page}}" data-csrf="{{.CSRF}}">
+  <a class="skip-link" href="#main">Langsung ke konten</a>
+  <div class="theme-atmosphere" aria-hidden="true">
+    <span class="atmo-pattern"></span>
+    <span class="atmo-glow"></span>
+    <span class="atmo-frame"></span>
+  </div>
+
+  <header class="site-topbar">
+    <a class="site-brand" href="/" aria-label="Beranda {{with .School}}{{.Name}}{{end}}">
+      <span class="logo-mark">
+        {{if .School.LogoPath}}<img src="{{.School.LogoPath}}" alt="" width="48" height="48">{{else}}{{initials .School.Name}}{{end}}
+      </span>
+      <span class="site-brand-text">
+        <strong>{{with .School}}{{.Name}}{{end}}</strong>
+        <span>Pemilihan OSIS{{with .Election}} - {{.Period}}{{end}}</span>
+      </span>
+    </a>
+    <p class="topbar-context">{{with .Election}}{{.Period}}{{else}}{{$.CurrentYear}}{{end}}<br>iklim demokrasi sekolah</p>
+  </header>
+
+  <main id="main">
+    {{template "content" .}}
+  </main>
+
+  <footer class="site-footer">
+    <div class="footer-inner">
+      <div class="footer-brand">
+        <span class="logo-mark">
+          {{if .School.LogoPath}}<img src="{{.School.LogoPath}}" alt="" width="38" height="38">{{else}}{{initials .School.Name}}{{end}}
+        </span>
+        <div>
+          <strong>{{with .School}}{{.Name}}{{end}}</strong>
+          <span>{{with .School}}{{if .Tagline}}{{.Tagline}}{{else}}Pemilihan OSIS yang jujur, rahasia, dan sederhana.{{end}}{{end}}</span>
+        </div>
+      </div>
+      <div class="footer-contact">
+        {{with .School}}
+          {{if .Address}}<span>{{.Address}}</span>{{end}}
+          {{if .Email}}<a href="mailto:{{.Email}}">{{.Email}}</a>{{end}}
+          {{if .Phone}}<span>{{.Phone}}</span>{{end}}
+        {{end}}
+      </div>
+      <div class="footer-meta">
+        <strong>Panitia Pemilihan</strong>
+        <span>Hak cipta {{.CurrentYear}} {{with .School}}{{.Name}}{{end}}</span>
+        {{with .School}}{{if .FooterText}}<span>{{.FooterText}}</span>{{end}}{{end}}
+        <a href="/admin/login">Akses panitia</a>
+      </div>
+    </div>
+  </footer>
+</body>
+</html>{{end}}

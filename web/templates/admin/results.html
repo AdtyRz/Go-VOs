@@ -1,0 +1,136 @@
+{{define "content"}}
+<div class="page-head">
+  <div class="page-head-copy">
+    <p class="eyebrow">Hasil pemilihan</p>
+    <h1 class="page-title">Angka yang<br>bicara jujur.</h1>
+    <p class="page-sub">Rekapitulasi suara sah, tingkat partisipasi, dan peringkat pasangan calon. Hanya panitia terautentikasi yang dapat melihat halaman ini.</p>
+  </div>
+  <div class="page-head-actions">
+    {{with .Election}}
+    <span class="badge badge-{{statusclass .Status}}">{{.StatusLabel}}</span>
+    <a class="btn btn-ghost btn-sm" href="/api/v1/admin/results/export?election_id={{.ID}}&format=csv">Ekspor CSV</a>
+    <a class="btn btn-primary btn-sm" href="/api/v1/admin/results/export?election_id={{.ID}}&format=pdf">Unduh PDF</a>
+    {{end}}
+  </div>
+</div>
+
+{{if .Election}}
+<div class="result-overview">
+  <section class="winner-card" aria-labelledby="winner-title">
+    <div class="winner-flag">
+      <p class="eyebrow">Perolehan tertinggi</p>
+      <span class="live-indicator" data-live-indicator data-state="idle"><i></i><span data-live-text>Menyiapkan live</span></span>
+    </div>
+    <div class="winner-main">
+      <span class="winner-number" data-winner-number>{{if .Results.Candidates}}{{with index .Results.Candidates 0}}{{printf "%02d" .CandidateNumber}}{{end}}{{else}}-{{end}}</span>
+      <div class="winner-copy">
+        <h2 id="winner-title" data-winner-chairman>{{if .Results.Candidates}}{{with index .Results.Candidates 0}}{{.ChairmanName}}{{end}}{{else}}Belum ada calon{{end}}</h2>
+        <p data-winner-vice>{{if .Results.Candidates}}{{with index .Results.Candidates 0}}{{.ViceChairmanName}}{{end}}{{else}}-{{end}}</p>
+      </div>
+    </div>
+    <div class="winner-figures">
+      <div><strong data-winner-votes>{{if .Results.Candidates}}{{with index .Results.Candidates 0}}{{.Votes}}{{end}}{{else}}0{{end}}</strong><span>suara</span></div>
+      <div><strong data-winner-pct>{{if .Results.Candidates}}{{with index .Results.Candidates 0}}{{pct .Percentage}}{{end}}{{else}}0,0%{{end}}</strong><span>dari suara sah</span></div>
+    </div>
+    <p class="winner-note" data-winner-note>{{if eq .Election.ResultsVisibility "LIVE"}}Angka sementara, diperbarui otomatis saat suara masuk.{{else}}Mode final: angka tetap diperbarui, publikasi resmi menunggu pemilihan ditutup.{{end}}</p>
+  </section>
+
+  <div class="result-side">
+    <article class="stat-card stat-card-primary">
+      <p class="stat-label">Total suara sah</p>
+      <p class="stat-value" data-stat="votes">{{.Results.TotalVotes}}</p>
+      <p class="stat-meta">{{.Stats.CandidateCount}} pasangan calon</p>
+    </article>
+    <article class="stat-card">
+      <p class="stat-label">Partisipasi</p>
+      <p class="stat-value" data-stat="participation">{{pct .Stats.Participation}}</p>
+      <p class="stat-meta"><span data-stat="tokens-used">{{.Stats.Used}}</span> dari <span data-stat="tokens-total">{{.Stats.Total}}</span> token</p>
+    </article>
+  </div>
+</div>
+
+<div class="results-layout">
+  <section class="card-panel live-results" data-live-results aria-labelledby="ranked-title">
+    <div class="panel-head">
+      <div>
+        <p class="eyebrow">Rekapitulasi</p>
+        <h2 class="panel-title" id="ranked-title">Peringkat pasangan calon</h2>
+      </div>
+      <span class="panel-context">Diperbarui <time data-live-updated>{{datetime .Results.UpdatedAt}}</time></span>
+    </div>
+    {{if .Results.Candidates}}
+    <ol class="result-list result-list-large">
+      {{range .Results.Candidates}}
+      <li class="result-item" data-candidate-id="{{.CandidateID}}">
+        <span class="result-rank" data-rank>#{{.Rank}}</span>
+        <div class="result-main">
+          <div class="result-line">
+            <span class="result-number">{{printf "%02d" .CandidateNumber}}</span>
+            <span class="result-names"><strong>{{.ChairmanName}}</strong><span>{{.ViceChairmanName}}</span></span>
+          </div>
+          <div class="result-bar"><progress max="100" value="{{.Percentage}}" aria-label="Persentase suara {{.ChairmanName}}">{{pct .Percentage}}</progress></div>
+          <div class="result-meta"><span data-votes>{{.Votes}} suara</span><span data-pct>{{pct .Percentage}}</span></div>
+        </div>
+      </li>
+      {{end}}
+    </ol>
+    {{else}}
+    <div class="empty-state empty-state-compact">
+      <span class="empty-mark" aria-hidden="true">0</span>
+      <strong>Belum ada pasangan calon.</strong>
+      <p>Hasil akan tersedia setelah pasangan calon ditambahkan.</p>
+    </div>
+    {{end}}
+  </section>
+
+  <aside class="results-side">
+    <section class="card-panel" aria-labelledby="participation-title">
+      <div class="panel-head">
+        <div>
+          <p class="eyebrow">Partisipasi</p>
+          <h2 class="panel-title" id="participation-title">Pemakaian token</h2>
+        </div>
+      </div>
+      <dl class="status-breakdown">
+        <div class="status-row"><dt><span class="status-swatch is-used"></span>Dipakai</dt><dd data-stat="tokens-used">{{.Stats.Used}}</dd></div>
+        <div class="status-row"><dt><span class="status-swatch is-available"></span>Tersedia</dt><dd data-stat="tokens-available">{{.Stats.Available}}</dd></div>
+        <div class="status-row"><dt><span class="status-swatch is-revoked"></span>Dicabut</dt><dd data-stat="tokens-revoked">{{.Stats.Revoked}}</dd></div>
+        <div class="status-row"><dt><span class="status-swatch is-expired"></span>Kedaluwarsa</dt><dd data-stat="tokens-expired">{{.Stats.Expired}}</dd></div>
+      </dl>
+      <div class="participation-meter">
+        <progress max="100" value="{{.Stats.Participation}}" aria-label="Tingkat partisipasi {{pct .Stats.Participation}}">{{pct .Stats.Participation}}</progress>
+        <p><strong data-stat="participation">{{pct .Stats.Participation}}</strong> token sudah digunakan</p>
+      </div>
+    </section>
+
+    <section class="card-panel" aria-labelledby="result-meta-title">
+      <div class="panel-head">
+        <div>
+          <p class="eyebrow">Konteks laporan</p>
+          <h2 class="panel-title" id="result-meta-title">Periode pemilihan</h2>
+        </div>
+      </div>
+      <dl class="meta-grid meta-grid-stack">
+        <div class="meta-block"><dt>Nama</dt><dd>{{.Election.Name}}</dd></div>
+        <div class="meta-block"><dt>Periode</dt><dd>{{.Election.Period}}</dd></div>
+        <div class="meta-block"><dt>Mulai</dt><dd>{{shortdatetime .Election.StartAt}}</dd></div>
+        <div class="meta-block"><dt>Selesai</dt><dd>{{shortdatetime .Election.EndAt}}</dd></div>
+        <div class="meta-block"><dt>Mode hasil</dt><dd>{{if eq .Election.ResultsVisibility "LIVE"}}Live monitoring{{else}}Final setelah ditutup{{end}}</dd></div>
+      </dl>
+    </section>
+  </aside>
+</div>
+
+<p class="security-note">
+  <svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="12" r="9"/><path d="M12 8v5M12 16h.01"/></svg>
+  Laporan tidak memuat token, sesi, atau identitas pemilih. Ekspor akan dicatat pada jejak audit.
+</p>
+{{else}}
+<div class="empty-state empty-state-page">
+  <span class="empty-mark">01</span>
+  <strong>Belum ada data untuk ditampilkan.</strong>
+  <p>Buat periode pemilihan dan tambahkan pasangan calon terlebih dahulu.</p>
+  <a class="btn btn-primary" href="/admin/elections">Buat periode pemilihan</a>
+</div>
+{{end}}
+{{end}}

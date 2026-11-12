@@ -1,0 +1,11 @@
+.env
+storage/uploads/*
+!storage/uploads/.gitkeep
+!storage/uploads/candidates/.gitkeep
+!storage/uploads/school/.gitkeep
+*.log
+govoting
+bin/
+coverage.out
+.DS_Store
+PRD.md

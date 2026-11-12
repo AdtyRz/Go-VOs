@@ -1,0 +1,144 @@
+{{define "layout"}}<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light">
+  <meta name="theme-color" content="{{if .School}}{{.School.PrimaryColor}}{{else}}#7a4f2a{{end}}">
+  <meta name="csrf-token" content="{{.CSRF}}">
+  <meta name="robots" content="noindex, nofollow">
+  <title>{{.Title}} - Panel Panitia</title>
+  <link rel="icon" href="/static/images/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="/static/css/base.css">
+  <link rel="stylesheet" href="/static/css/admin.css">
+  {{with .School}}<link rel="stylesheet" href="/static/css/theme-{{.Theme}}.css">{{end}}
+  <link rel="stylesheet" href="/theme.css">
+  <script defer src="/static/js/admin-common.js"></script>
+  {{range .Scripts}}<script defer src="/static/js/{{.}}"></script>{{end}}
+</head>
+<body class="admin-shell{{with .School}} theme-{{.Theme}}{{end}}" data-page="{{.Page}}" data-csrf="{{.CSRF}}"{{with .Election}} data-election-id="{{.ID}}"{{end}}>
+  <a class="skip-link" href="#admin-main">Langsung ke konten</a>
+
+  <div class="admin-frame">
+    <aside class="admin-sidebar" id="admin-sidebar" aria-label="Navigasi panel panitia">
+      <a class="admin-brand" href="/admin">
+        <span class="logo-mark">
+          {{if .School.LogoPath}}<img src="{{.School.LogoPath}}" alt="" width="46" height="46">{{else}}{{initials .School.Name}}{{end}}
+        </span>
+        <span class="admin-brand-text">
+          <strong>{{with .School}}{{.Name}}{{end}}</strong>
+          <span>Panel Panitia</span>
+        </span>
+      </a>
+
+      <nav class="admin-nav">
+        <p class="nav-label">Pemilihan</p>
+        <a class="nav-link{{if eq .Page "dashboard"}} is-active{{end}}" href="/admin"{{if eq .Page "dashboard"}} aria-current="page"{{end}}>
+          <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+          <span>Ringkasan</span>
+        </a>
+        <a class="nav-link{{if eq .Page "elections"}} is-active{{end}}" href="/admin/elections"{{if eq .Page "elections"}} aria-current="page"{{end}}>
+          <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M7 3v4M17 3v4M3 10h18"/><path d="M8 14h3M8 17h6"/></svg>
+          <span>Periode pemilihan</span>
+        </a>
+        <a class="nav-link{{if eq .Page "candidates"}} is-active{{end}}" href="/admin/candidates"{{if eq .Page "candidates"}} aria-current="page"{{end}}>
+          <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="9" cy="8" r="3.2"/><path d="M3.5 20c.4-3.4 2.3-5.4 5.5-5.4s5.1 2 5.5 5.4"/><path d="M16 5.5c1.2 0 2 .9 2 2.1s-.8 2.1-2 2.1M18.5 14.8c1.3.6 2.1 1.8 2.3 3.5"/></svg>
+          <span>Pasangan calon</span>
+        </a>
+        <a class="nav-link{{if eq .Page "tokens"}} is-active{{end}}" href="/admin/tokens"{{if eq .Page "tokens"}} aria-current="page"{{end}}>
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 8a2 2 0 0 0 2-2h12a2 2 0 0 0 2 2v2a2 2 0 0 0 0 4v2a2 2 0 0 0-2 2H6a2 2 0 0 0-2-2v-2a2 2 0 0 0 0-4Z"/><path d="M12 8.5v7" stroke-dasharray="2 2"/></svg>
+          <span>Token pemilih</span>
+        </a>
+        <a class="nav-link{{if eq .Page "results"}} is-active{{end}}" href="/admin/results"{{if eq .Page "results"}} aria-current="page"{{end}}>
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg>
+          <span>Hasil pemilihan</span>
+        </a>
+
+        <p class="nav-label">Sekolah</p>
+        <a class="nav-link{{if eq .Page "school"}} is-active{{end}}" href="/admin/school"{{if eq .Page "school"}} aria-current="page"{{end}}>
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 21h18M5 21V9l7-4 7 4v12"/><path d="M9 21v-5h6v5M9 11h.01M15 11h.01"/></svg>
+          <span>Identitas sekolah</span>
+        </a>
+        <a class="nav-link{{if eq .Page "audit"}} is-active{{end}}" href="/admin/audit"{{if eq .Page "audit"}} aria-current="page"{{end}}>
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 3h14v18H5z"/><path d="M8 8h8M8 12h8M8 16h5"/></svg>
+          <span>Jejak audit</span>
+        </a>
+      </nav>
+
+      <div class="admin-sidebar-foot">
+        {{with .Admin}}
+        <div class="admin-identity">
+          <span class="avatar">{{initials .Name}}</span>
+          <span><strong>{{.Name}}</strong><small>{{if eq .Role "superadmin"}}Superadmin{{else}}Panitia{{end}}</small></span>
+        </div>
+        {{end}}
+        <button class="btn btn-ghost btn-sm btn-block" type="button" data-logout>Keluar dari panel</button>
+      </div>
+    </aside>
+
+    <button class="nav-scrim" type="button" data-nav-close aria-label="Tutup navigasi"></button>
+
+    <div class="admin-workspace">
+      <header class="admin-topbar">
+        <button class="nav-toggle" type="button" data-nav-toggle aria-controls="admin-sidebar" aria-expanded="false">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 6h18M3 12h18M3 18h18"/></svg>
+          <span class="sr-only">Buka navigasi</span>
+        </button>
+
+        {{if .Elections}}
+        <form class="topbar-election" method="get" data-election-form>
+          <label for="election-switch">Pemilihan</label>
+          <span class="election-switch">
+            <select id="election-switch" name="election_id" data-election-select>
+              {{range .Elections}}
+              <option value="{{.ID}}"{{if $.Election}}{{if eq .ID $.Election.ID}} selected{{end}}{{end}}>{{.Name}} - {{.Period}}</option>
+              {{end}}
+            </select>
+            <button class="btn btn-quiet btn-sm" type="submit">Ganti</button>
+          </span>
+        </form>
+        {{else}}
+        <p class="topbar-empty">Belum ada periode pemilihan</p>
+        {{end}}
+
+        <div class="topbar-actions{{if or (eq .Page "dashboard") (eq .Page "results")}} topbar-actions-live{{end}}">
+          {{if or (eq .Page "dashboard") (eq .Page "results")}}
+          <span class="live-indicator" data-live-indicator data-state="idle"><i></i><span data-live-text>Menyiapkan live</span></span>
+          {{end}}
+          <a class="btn btn-quiet btn-sm" href="/" target="_blank" rel="noopener">Lihat halaman siswa</a>
+        </div>
+      </header>
+
+      <main class="admin-main" id="admin-main">
+        {{if .ElectionErr}}<div class="alert alert-warning" role="alert">{{.ElectionErr}} Pilih periode lain dari menu di atas.</div>{{end}}
+        {{if .Flash}}<div class="alert alert-{{if .FlashKind}}{{.FlashKind}}{{else}}info{{end}}" role="status">{{.Flash}}</div>{{end}}
+        {{template "content" .}}
+      </main>
+
+      <footer class="admin-footer">
+        <span>Go-Voting - panel panitia {{with .School}}{{.Name}}{{end}}</span>
+        <span>Hak cipta {{.CurrentYear}} - semua aksi penting tercatat di jejak audit</span>
+      </footer>
+    </div>
+  </div>
+
+  <dialog id="confirm-dialog" class="app-dialog" aria-labelledby="confirm-title">
+    <div class="dialog-card">
+      <div class="dialog-head">
+        <div>
+          <p class="eyebrow">Konfirmasi</p>
+          <h2 id="confirm-title">Lanjutkan tindakan?</h2>
+        </div>
+        <button class="dialog-close" type="button" data-close-dialog aria-label="Tutup dialog"><svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8"><path d="m6 6 12 12M18 6 6 18"/></svg></button>
+      </div>
+      <p class="dialog-copy" id="confirm-message"></p>
+      <div class="dialog-actions">
+        <button class="btn btn-ghost" type="button" data-close-dialog>Batal</button>
+        <button class="btn btn-primary" type="button" id="confirm-ok">Ya, lanjutkan</button>
+      </div>
+    </div>
+  </dialog>
+
+  <div class="toast-stack" id="toasts" role="status" aria-live="polite"></div>
+</body>
+</html>{{end}}

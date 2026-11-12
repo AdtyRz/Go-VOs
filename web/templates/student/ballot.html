@@ -1,0 +1,115 @@
+{{define "content"}}
+<section class="ballot-main">
+  <header class="ballot-head">
+    <p class="eyebrow">Bilik suara - {{with .Election}}{{.Period}}{{end}}</p>
+    <div class="ballot-heading-row">
+      <h1>Pilih dengan sadar.</h1>
+      <div class="pill-row">
+        <span class="badge badge-live">Berlangsung</span>
+        <span class="badge no-dot">{{len .Candidates}} pasangan calon</span>
+      </div>
+    </div>
+    <p class="ballot-lede">{{with .Election}}{{if .Description}}{{.Description}}{{else}}Baca visi dan misi setiap pasangan calon. Pilihan yang dikirim tidak dapat diubah, jadi pastikan Anda memilih dengan tenang.{{end}}{{end}}</p>
+    <div class="ballot-note">
+      <svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.7"><circle cx="12" cy="12" r="9"/><path d="M12 8v5M12 16h.01"/></svg>
+      <span>Suara bersifat final dan rahasia. Setelah dikirim, pilihan tidak dapat diperiksa, diubah, atau ditarik kembali.</span>
+    </div>
+  </header>
+
+  {{if .Candidates}}
+  <div class="candidate-list">
+    {{range .Candidates}}
+    <article class="candidate-row" data-candidate-id="{{.ID}}" data-candidate-number="{{printf "%02d" .CandidateNumber}}" data-chairman="{{.ChairmanName}}" data-vice="{{.ViceChairmanName}}">
+      <div class="candidate-index" aria-hidden="true">
+        <span>Paslon</span>
+        <strong>{{printf "%02d" .CandidateNumber}}</strong>
+      </div>
+      <figure class="candidate-photo">
+        {{if .PhotoPath}}
+        <img src="{{.PhotoPath}}" alt="Foto pasangan calon nomor {{.CandidateNumber}}" loading="lazy" width="280" height="350">
+        {{else}}
+        <div class="candidate-monogram">
+          <span>{{initials .ChairmanName}}</span>
+          <b>{{printf "%02d" .CandidateNumber}}</b>
+        </div>
+        {{end}}
+      </figure>
+      <div class="candidate-main">
+        <div class="candidate-names">
+          <span class="role">Calon Ketua</span>
+          <h2>{{.ChairmanName}}</h2>
+          <span class="role">Calon Wakil Ketua</span>
+          <h3>{{.ViceChairmanName}}</h3>
+        </div>
+        <div class="candidate-platform">
+          <div>
+            <h4>Visi</h4>
+            <p>{{.Vision}}</p>
+          </div>
+          <div>
+            <h4>Misi</h4>
+            <ul>
+              {{range splitlines .Mission}}<li>{{.}}</li>{{end}}
+            </ul>
+          </div>
+        </div>
+        <div class="candidate-foot">
+          <p>Pastikan nomor urut dan nama sudah sesuai sebelum memilih.</p>
+          <button class="btn btn-primary choose-btn" type="button" data-choose data-candidate-id="{{.ID}}" data-number="{{printf "%02d" .CandidateNumber}}" data-chairman="{{.ChairmanName}}" data-vice="{{.ViceChairmanName}}">
+            Pilih paslon {{printf "%02d" .CandidateNumber}}
+          </button>
+        </div>
+      </div>
+    </article>
+    {{end}}
+  </div>
+  {{else}}
+  <div class="empty-state">
+    <span class="empty-mark" aria-hidden="true">0</span>
+    <strong>Belum ada pasangan calon.</strong>
+    <p>Panitia belum menambahkan pasangan calon untuk periode ini. Hubungi panitia bila hal ini tidak sesuai.</p>
+  </div>
+  {{end}}
+
+  <div class="ballot-expiry">
+    <p>Sesi ini berakhir pukul <strong>{{clock .ExpiresAt}}</strong>. Jangan tutup halaman sebelum suara terkirim.</p>
+    <button class="btn btn-quiet btn-sm" type="button" id="cancel-session">Batalkan sesi dan keluar</button>
+  </div>
+</section>
+
+<dialog id="vote-dialog" class="ballot-confirm app-dialog" aria-labelledby="vote-title">
+  <div class="dialog-card ballot-confirm">
+    <div class="confirm-seal" aria-hidden="true"><span>Pilihan</span><strong id="confirm-number">01</strong></div>
+    <p class="eyebrow centered">Konfirmasi suara</p>
+    <h2 id="vote-title">Kirim suara ini?</h2>
+    <div class="confirm-names">
+      <strong id="confirm-chairman">-</strong>
+      <span id="confirm-vice">-</span>
+    </div>
+    <p class="confirm-copy">Suara yang sudah dikirim tidak dapat diubah. Token Anda akan hangus setelah transaksi berhasil.</p>
+    <p class="form-message" id="vote-error" role="alert" hidden></p>
+    <div class="dialog-actions">
+      <button class="btn btn-ghost" type="button" data-close-dialog>Periksa lagi</button>
+      <button class="btn btn-primary" type="button" id="confirm-vote">Ya, kirim suara</button>
+    </div>
+  </div>
+</dialog>
+
+<dialog id="cancel-dialog" class="app-dialog" aria-labelledby="cancel-title">
+  <div class="dialog-card">
+    <div class="dialog-head">
+      <div>
+        <p class="eyebrow">Keluar bilik</p>
+        <h2 id="cancel-title">Batalkan sesi memilih?</h2>
+      </div>
+      <button class="dialog-close" type="button" data-close-dialog aria-label="Tutup dialog"><svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8"><path d="m6 6 12 12M18 6 6 18"/></svg></button>
+    </div>
+    <p class="dialog-copy">Token Anda tidak akan hangus, tetapi sesi ini akan ditutup dan Anda perlu memasukkan token kembali untuk melanjutkan.</p>
+    <p class="form-message" id="cancel-error" role="alert" hidden></p>
+    <div class="dialog-actions">
+      <button class="btn btn-ghost" type="button" data-close-dialog>Kembali memilih</button>
+      <button class="btn btn-danger" type="button" id="confirm-cancel">Ya, batalkan sesi</button>
+    </div>
+  </div>
+</dialog>
+{{end}}

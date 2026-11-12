@@ -1,0 +1,140 @@
+{{define "content"}}
+<div class="page-head">
+  <div class="page-head-copy">
+    <p class="eyebrow">Pasangan calon</p>
+    <h1 class="page-title">Wajah pilihan,<br>disusun rapi.</h1>
+    <p class="page-sub">Kelola nomor urut, profil, visi, dan misi pasangan calon. Perubahan hanya dapat dilakukan saat periode masih draft atau terjadwal.</p>
+  </div>
+  <div class="page-head-actions">
+    {{with .Election}}<span class="badge badge-{{statusclass .Status}}">{{.StatusLabel}}</span>{{end}}
+    {{if and .Election .CanEdit}}
+    <button class="btn btn-primary btn-sm" type="button" data-candidate-create>Tambah pasangan calon</button>
+    {{end}}
+  </div>
+</div>
+
+{{if .Election}}
+  {{if not .CanEdit}}
+  <div class="alert alert-info" role="status">
+    <svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.7"><rect x="5" y="10" width="14" height="10" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg>
+    <span>Daftar pasangan calon terkunci karena pemilihan sudah dimulai atau ditutup. Hentikan pemilihan hanya jika benar-benar diperlukan.</span>
+  </div>
+  {{end}}
+
+  {{if .Candidates}}
+  <div class="candidate-admin-grid">
+    {{range .Candidates}}
+    <article class="admin-candidate-card" data-candidate-id="{{.ID}}" data-number="{{.CandidateNumber}}" data-chairman="{{.ChairmanName}}" data-vice="{{.ViceChairmanName}}" data-vision="{{.Vision}}" data-mission="{{.Mission}}" data-active="{{if .IsActive}}true{{else}}false{{end}}" data-photo="{{.PhotoPath}}">
+      <div class="candidate-card-head">
+        <div class="candidate-thumb">
+          {{if .PhotoPath}}<img src="{{.PhotoPath}}" alt="Foto {{.ChairmanName}}" loading="lazy" width="96" height="120">{{else}}<span>{{initials .ChairmanName}}</span>{{end}}
+          <b>{{printf "%02d" .CandidateNumber}}</b>
+        </div>
+        <div class="candidate-card-title">
+          <span class="badge {{if .IsActive}}badge-active{{else}}badge-archived{{end}}">{{if .IsActive}}Aktif{{else}}Nonaktif{{end}}</span>
+          <h2>{{.ChairmanName}}</h2>
+          <p>{{.ViceChairmanName}}</p>
+        </div>
+      </div>
+      <p class="candidate-card-vision">{{truncate .Vision 190}}</p>
+      <div class="candidate-card-meta">
+        <span>{{len (splitlines .Mission)}} poin misi</span>
+        <span>Paslon {{printf "%02d" .CandidateNumber}}</span>
+      </div>
+      <div class="candidate-card-actions">
+        {{if $.CanEdit}}
+        <button class="btn btn-ghost btn-sm" type="button" data-candidate-edit>Ubah profil</button>
+        <button class="btn btn-danger btn-sm" type="button" data-candidate-delete>Hapus</button>
+        {{else}}
+        <span class="muted candidate-locked">Terkunci</span>
+        {{end}}
+      </div>
+    </article>
+    {{end}}
+  </div>
+  {{else}}
+  <div class="empty-state empty-state-page">
+    <span class="empty-mark" aria-hidden="true">0</span>
+    <strong>Belum ada pasangan calon.</strong>
+    <p>Tambahkan minimal dua pasangan calon agar pemilihan dapat dijadwalkan.</p>
+    {{if .CanEdit}}<button class="btn btn-primary" type="button" data-candidate-create>Tambah pasangan calon</button>{{end}}
+  </div>
+  {{end}}
+
+  {{if .CanEdit}}
+  <dialog id="candidate-dialog" class="app-dialog" aria-labelledby="candidate-dialog-title">
+    <form class="dialog-card dialog-wide" id="candidate-form">
+      <div class="dialog-head">
+        <div>
+          <p class="eyebrow">Profil pasangan calon</p>
+          <h2 id="candidate-dialog-title">Tambah pasangan calon</h2>
+        </div>
+        <button class="dialog-close" type="button" data-close-dialog aria-label="Tutup dialog"><svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8"><path d="m6 6 12 12M18 6 6 18"/></svg></button>
+      </div>
+
+      <input type="hidden" name="election_id" value="{{.Election.ID}}">
+      <input type="hidden" name="remove_photo" id="candidate-remove-photo" value="false">
+
+      <div class="candidate-form-layout">
+        <div class="form-grid candidate-form-fields">
+          <div class="field">
+            <label for="candidate-number">Nomor urut</label>
+            <input class="input" id="candidate-number" name="candidate_number" type="number" min="1" max="99" required inputmode="numeric">
+          </div>
+          <div class="field">
+            <label for="candidate-active">Status tampil</label>
+            <label class="check candidate-switch">
+              <input id="candidate-active" name="is_active" type="checkbox" checked>
+              <span>Tampilkan di bilik suara</span>
+            </label>
+          </div>
+          <div class="field">
+            <label for="candidate-chairman">Nama calon ketua</label>
+            <input class="input" id="candidate-chairman" name="chairman_name" type="text" required maxlength="140" autocomplete="off">
+          </div>
+          <div class="field">
+            <label for="candidate-vice">Nama calon wakil ketua</label>
+            <input class="input" id="candidate-vice" name="vice_chairman_name" type="text" required maxlength="140" autocomplete="off">
+          </div>
+          <div class="field full">
+            <label for="candidate-vision">Visi</label>
+            <textarea class="textarea" id="candidate-vision" name="vision" required maxlength="4000" rows="3"></textarea>
+          </div>
+          <div class="field full">
+            <label for="candidate-mission">Misi <span class="field-hint">satu poin per baris</span></label>
+            <textarea class="textarea" id="candidate-mission" name="mission" required maxlength="4000" rows="5"></textarea>
+          </div>
+        </div>
+
+        <aside class="candidate-photo-field">
+          <p class="field-label">Foto pasangan</p>
+          <div class="upload-preview" id="candidate-photo-preview">
+            <img id="candidate-photo-img" alt="Pratinjau foto pasangan calon" hidden>
+            <span class="upload-placeholder" id="candidate-photo-placeholder">Rasio 4:5<br><small>JPG, PNG, atau WebP - maks. 3 MB</small></span>
+          </div>
+          <label class="btn btn-ghost btn-sm btn-block file-button" for="candidate-photo">Pilih foto
+            <input id="candidate-photo" name="photo" type="file" accept="image/jpeg,image/png,image/webp" class="sr-only">
+          </label>
+          <button class="btn btn-quiet btn-sm btn-block" type="button" id="candidate-photo-clear">Hapus foto</button>
+          <p class="field-hint">Foto akan dipotong otomatis ke rasio 4:5. Gunakan foto dengan pencahayaan yang baik.</p>
+        </aside>
+      </div>
+
+      <p class="form-message" id="candidate-form-error" role="alert" hidden></p>
+
+      <div class="dialog-actions">
+        <button class="btn btn-ghost" type="button" data-close-dialog>Batal</button>
+        <button class="btn btn-primary" type="submit" id="candidate-submit">Simpan pasangan calon</button>
+      </div>
+    </form>
+  </dialog>
+  {{end}}
+{{else}}
+<div class="empty-state empty-state-page">
+  <span class="empty-mark">01</span>
+  <strong>Belum ada periode pemilihan.</strong>
+  <p>Buat periode terlebih dahulu sebelum menambahkan pasangan calon.</p>
+  <a class="btn btn-primary" href="/admin/elections">Buat periode pemilihan</a>
+</div>
+{{end}}
+{{end}}

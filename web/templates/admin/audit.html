@@ -1,0 +1,83 @@
+{{define "content"}}
+<div class="page-head">
+  <div class="page-head-copy">
+    <p class="eyebrow">Jejak audit</p>
+    <h1 class="page-title">Semua tindakan,<br>tercatat.</h1>
+    <p class="page-sub">Catatan kronologis tindakan panitia: login, perubahan data, penerbitan token, dan ekspor laporan. Catatan tidak dapat diubah dari panel.</p>
+  </div>
+  <div class="page-head-actions">
+    <span class="badge no-dot">{{.Total}} catatan</span>
+  </div>
+</div>
+
+<section class="card-panel data-panel" aria-labelledby="audit-title">
+  <div class="panel-head">
+    <div>
+      <p class="eyebrow">Log aktivitas</p>
+      <h2 class="panel-title" id="audit-title">Riwayat terbaru</h2>
+    </div>
+    <span class="panel-context">Halaman {{.PageNum}} dari {{.Pages}}</span>
+  </div>
+
+  {{if .Logs}}
+  <div class="table-wrap">
+    <table class="table audit-table">
+      <thead>
+        <tr>
+          <th>Waktu</th>
+          <th>Pelaku</th>
+          <th>Tindakan</th>
+          <th>Objek</th>
+          <th>Detail</th>
+        </tr>
+      </thead>
+      <tbody>
+        {{range .Logs}}
+        <tr>
+          <td class="audit-time"><time datetime="{{.CreatedAt}}">{{shortdatetime .CreatedAt}}</time></td>
+          <td><span class="audit-admin">{{.AdminName}}</span></td>
+          <td><strong>{{actionlabel .Action}}</strong><span class="audit-code mono">{{.Action}}</span></td>
+          <td class="muted">{{.EntityType}}{{if .EntityID}} <span class="mono">#{{.EntityID}}</span>{{end}}</td>
+          <td>
+            {{if .Metadata}}
+            <details class="metadata-details">
+              <summary>Lihat detail</summary>
+              <pre>{{printf "%s" .Metadata}}</pre>
+            </details>
+            {{else}}<span class="muted">-</span>{{end}}
+          </td>
+        </tr>
+        {{end}}
+      </tbody>
+    </table>
+  </div>
+
+  <div class="data-footer">
+    <p class="muted">{{.Total}} catatan tersimpan</p>
+    <nav class="pagination" aria-label="Navigasi halaman audit">
+      {{if gt .PageNum 1}}
+      <a href="/admin/audit?page={{add .PageNum -1}}" rel="prev">Sebelumnya</a>
+      {{else}}
+      <span class="is-disabled">Sebelumnya</span>
+      {{end}}
+      {{if lt .PageNum .Pages}}
+      <a href="/admin/audit?page={{add .PageNum 1}}" rel="next">Berikutnya</a>
+      {{else}}
+      <span class="is-disabled">Berikutnya</span>
+      {{end}}
+    </nav>
+  </div>
+  {{else}}
+  <div class="empty-state">
+    <span class="empty-mark" aria-hidden="true">0</span>
+    <strong>Belum ada catatan audit.</strong>
+    <p>Aktivitas panitia akan muncul di sini setelah tindakan pertama dilakukan.</p>
+  </div>
+  {{end}}
+</section>
+
+<div class="alert alert-info audit-note" role="note">
+  <svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M12 3 5 6v5c0 4.8 2.9 8.2 7 10 4.1-1.8 7-5.2 7-10V6l-7-3Z"/></svg>
+  <span>Audit tidak mencatat pilihan siswa atau identitas pemilih. Data suara tetap anonim dan terpisah dari data operasional.</span>
+</div>
+{{end}}

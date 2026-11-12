@@ -1,0 +1,132 @@
+{{define "content"}}
+<div class="page-head">
+  <div class="page-head-copy">
+    <p class="eyebrow">Periode pemilihan</p>
+    <h1 class="page-title">Satu periode,<br>satu keputusan.</h1>
+    <p class="page-sub">Buat, jadwalkan, dan tutup periode pemilihan. Hanya satu periode yang dapat berlangsung pada satu waktu.</p>
+  </div>
+  <div class="page-head-actions">
+    <button class="btn btn-primary btn-sm" type="button" data-election-create>Buat periode baru</button>
+  </div>
+</div>
+
+{{if .HasActive}}
+<div class="alert alert-warning" role="status">
+  <svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.7"><circle cx="12" cy="12" r="9"/><path d="M12 8v5M12 16h.01"/></svg>
+  <span>Saat ini ada pemilihan yang sedang berlangsung. Periode lain tidak dapat dimulai sebelum periode aktif ditutup atau dijeda.</span>
+</div>
+{{end}}
+
+{{if .Elections}}
+<div class="election-list">
+  {{range .Elections}}
+  <article class="election-card status-{{statusclass .Status}}" data-election-id="{{.ID}}" data-name="{{.Name}}" data-period="{{.Period}}" data-description="{{.Description}}" data-start="{{inputdate .StartAt}}" data-end="{{inputdate .EndAt}}" data-visibility="{{.ResultsVisibility}}">
+    <div class="election-card-status">
+      <span class="badge badge-{{statusclass .Status}}">{{.StatusLabel}}</span>
+      {{if eq .ResultsVisibility "LIVE"}}<span class="badge no-dot">Mode live</span>{{else}}<span class="badge no-dot">Mode final</span>{{end}}
+      {{if eq .Status "ACTIVE"}}<span class="live-indicator" data-state="live"><i></i><span>Berlangsung</span></span>{{end}}
+    </div>
+    <div class="election-card-body">
+      <p class="eyebrow">{{.Period}}</p>
+      <h2>{{.Name}}</h2>
+      <p class="election-description">{{if .Description}}{{.Description}}{{else}}Belum ada deskripsi untuk periode ini.{{end}}</p>
+      <dl class="meta-grid election-meta">
+        <div class="meta-block"><dt>Mulai</dt><dd>{{shortdatetime .StartAt}}</dd></div>
+        <div class="meta-block"><dt>Selesai</dt><dd>{{shortdatetime .EndAt}}</dd></div>
+        <div class="meta-block"><dt>Pasangan calon</dt><dd>{{.CandidateCount}} aktif</dd></div>
+        <div class="meta-block"><dt>Hasil</dt><dd>{{if eq .ResultsVisibility "LIVE"}}Live monitoring{{else}}Final setelah ditutup{{end}}</dd></div>
+      </dl>
+    </div>
+    <div class="election-card-actions">
+      <a class="btn btn-ghost btn-sm" href="/admin?election_id={{.ID}}">Ringkasan</a>
+      {{if .IsEditable}}<button class="btn btn-ghost btn-sm" type="button" data-election-edit>Ubah detail</button>{{end}}
+      {{if eq .Status "DRAFT"}}<button class="btn btn-secondary btn-sm" type="button" data-election-action="schedule">Jadwalkan</button>{{end}}
+      {{if eq .Status "DRAFT"}}<button class="btn btn-primary btn-sm" type="button" data-election-action="start">Mulai sekarang</button>{{end}}
+      {{if eq .Status "SCHEDULED"}}<button class="btn btn-primary btn-sm" type="button" data-election-action="start">Mulai sekarang</button>{{end}}
+      {{if eq .Status "PAUSED"}}<button class="btn btn-primary btn-sm" type="button" data-election-action="start">Lanjutkan</button>{{end}}
+      {{if eq .Status "ACTIVE"}}<button class="btn btn-secondary btn-sm" type="button" data-election-action="pause">Jeda</button>{{end}}
+      {{if or (eq .Status "ACTIVE") (eq .Status "PAUSED") (eq .Status "SCHEDULED")}}<button class="btn btn-danger btn-sm" type="button" data-election-close>Tutup pemilihan</button>{{end}}
+      {{if eq .Status "CLOSED"}}<button class="btn btn-ghost btn-sm" type="button" data-election-action="archive">Arsipkan</button>{{end}}
+    </div>
+  </article>
+  {{end}}
+</div>
+{{else}}
+<div class="empty-state empty-state-page">
+  <span class="empty-mark">01</span>
+  <strong>Belum ada periode pemilihan.</strong>
+  <p>Mulai dari satu periode, tambahkan pasangan calon, lalu terbitkan token pemilih.</p>
+  <button class="btn btn-primary" type="button" data-election-create>Buat periode pemilihan</button>
+</div>
+{{end}}
+
+<dialog id="election-dialog" class="app-dialog" aria-labelledby="election-dialog-title">
+  <form class="dialog-card dialog-wide" id="election-form">
+    <div class="dialog-head">
+      <div>
+        <p class="eyebrow">Periode pemilihan</p>
+        <h2 id="election-dialog-title">Buat periode baru</h2>
+      </div>
+      <button class="dialog-close" type="button" data-close-dialog aria-label="Tutup dialog"><svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8"><path d="m6 6 12 12M18 6 6 18"/></svg></button>
+    </div>
+    <div class="form-grid">
+      <div class="field full">
+        <label for="election-name">Nama pemilihan</label>
+        <input class="input" id="election-name" name="name" type="text" required maxlength="180" placeholder="mis. Pemilihan Ketua &amp; Wakil Ketua OSIS">
+      </div>
+      <div class="field">
+        <label for="election-period">Periode</label>
+        <input class="input" id="election-period" name="period" type="text" required maxlength="80" placeholder="mis. 2026/2027">
+      </div>
+      <div class="field">
+        <label for="election-visibility">Mode hasil</label>
+        <select class="select" id="election-visibility" name="results_visibility">
+          <option value="LIVE">Live monitoring</option>
+          <option value="FINAL">Final setelah ditutup</option>
+        </select>
+        <p class="field-hint">Semua hasil tetap hanya terlihat oleh panitia.</p>
+      </div>
+      <div class="field">
+        <label for="election-start">Mulai</label>
+        <input class="input" id="election-start" name="start_at" type="datetime-local" required>
+      </div>
+      <div class="field">
+        <label for="election-end">Selesai</label>
+        <input class="input" id="election-end" name="end_at" type="datetime-local" required>
+      </div>
+      <div class="field full">
+        <label for="election-description">Deskripsi <span class="field-hint">opsional</span></label>
+        <textarea class="textarea" id="election-description" name="description" maxlength="2000" rows="3" placeholder="Tujuan atau catatan singkat periode ini."></textarea>
+      </div>
+    </div>
+    <p class="form-message" id="election-form-error" role="alert" hidden></p>
+    <div class="dialog-actions">
+      <button class="btn btn-ghost" type="button" data-close-dialog>Batal</button>
+      <button class="btn btn-primary" type="submit" id="election-submit">Simpan periode</button>
+    </div>
+  </form>
+</dialog>
+
+<dialog id="close-dialog" class="app-dialog" aria-labelledby="close-dialog-title">
+  <form class="dialog-card" id="close-form">
+    <div class="dialog-head">
+      <div>
+        <p class="eyebrow">Tindakan final</p>
+        <h2 id="close-dialog-title">Tutup pemilihan?</h2>
+      </div>
+      <button class="dialog-close" type="button" data-close-dialog aria-label="Tutup dialog"><svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8"><path d="m6 6 12 12M18 6 6 18"/></svg></button>
+    </div>
+    <p class="dialog-copy">Setelah ditutup, pemilihan tidak dapat dibuka kembali. Token yang belum dipakai tidak akan bisa digunakan. Tindakan ini memerlukan password administrator.</p>
+    <div class="alert alert-danger dialog-alert" role="alert">Pastikan seluruh suara sudah masuk dan panitia siap mengesahkan hasil.</div>
+    <div class="field">
+      <label for="close-password">Password administrator</label>
+      <input class="input" id="close-password" name="password" type="password" autocomplete="current-password" required maxlength="512">
+    </div>
+    <p class="form-message" id="close-form-error" role="alert" hidden></p>
+    <div class="dialog-actions">
+      <button class="btn btn-ghost" type="button" data-close-dialog>Batal</button>
+      <button class="btn btn-danger-solid" type="submit" id="close-submit">Tutup pemilihan</button>
+    </div>
+  </form>
+</dialog>
+{{end}}

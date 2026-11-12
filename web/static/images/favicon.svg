@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Go-Voting">
+  <defs>
+    <linearGradient id="bg" x1="8" y1="6" x2="56" y2="58" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#f7fbff"/>
+      <stop offset="0.55" stop-color="#cfe4f7"/>
+      <stop offset="1" stop-color="#8db9e0"/>
+    </linearGradient>
+    <linearGradient id="ink" x1="20" y1="16" x2="46" y2="50" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#223a52"/>
+      <stop offset="1" stop-color="#0e1d2e"/>
+    </linearGradient>
+  </defs>
+  <rect x="2" y="2" width="60" height="60" rx="16" fill="url(#bg)"/>
+  <rect x="3" y="3" width="58" height="58" rx="15" fill="none" stroke="#ffffff" stroke-opacity="0.85" stroke-width="2"/>
+  <path d="M18 24h28v22a3 3 0 0 1-3 3H21a3 3 0 0 1-3-3Z" fill="url(#ink)"/>
+  <path d="M18 24h28" stroke="#ffffff" stroke-opacity="0.28" stroke-width="2"/>
+  <path d="M24 34l5 5 11-12" fill="none" stroke="#eaf5ff" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M20 15h24" stroke="#ffffff" stroke-opacity="0.7" stroke-width="2" stroke-linecap="round"/>
+</svg>

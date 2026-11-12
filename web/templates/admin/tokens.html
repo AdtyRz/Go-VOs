@@ -1,0 +1,163 @@
+{{define "content"}}
+<div class="page-head">
+  <div class="page-head-copy">
+    <p class="eyebrow">Token pemilih</p>
+    <h1 class="page-title">Satu token,<br>satu suara.</h1>
+    <p class="page-sub">Terbitkan token sekali pakai, pantau statusnya, dan cabut token yang tidak lagi diperlukan. Nilai token asli hanya ditampilkan sekali saat dibuat.</p>
+  </div>
+  <div class="page-head-actions">
+    {{with .Election}}<span class="badge badge-{{statusclass .Status}}">{{.StatusLabel}}</span>{{end}}
+    {{if .Election}}
+    <a class="btn btn-ghost btn-sm" href="/api/v1/admin/tokens/export?election_id={{.Election.ID}}">Unduh metadata</a>
+    <button class="btn btn-primary btn-sm" type="button" data-token-generate>Terbitkan token</button>
+    {{end}}
+  </div>
+</div>
+
+{{if .Election}}
+<div class="stat-grid stat-grid-tokens">
+  <article class="stat-card"><p class="stat-label">Total diterbitkan</p><p class="stat-value" data-stat="tokens-total">{{.Stats.Total}}</p><p class="stat-meta">seluruh status</p></article>
+  <article class="stat-card"><p class="stat-label">Tersedia</p><p class="stat-value" data-stat="tokens-available">{{.Stats.Available}}</p><p class="stat-meta">belum dipakai</p></article>
+  <article class="stat-card"><p class="stat-label">Dipakai</p><p class="stat-value" data-stat="tokens-used">{{.Stats.Used}}</p><p class="stat-meta">token sudah hangus</p></article>
+  <article class="stat-card"><p class="stat-label">Dicabut</p><p class="stat-value" data-stat="tokens-revoked">{{.Stats.Revoked}}</p><p class="stat-meta">tidak dapat dipakai</p></article>
+  <article class="stat-card"><p class="stat-label">Kedaluwarsa</p><p class="stat-value" data-stat="tokens-expired">{{.Stats.Expired}}</p><p class="stat-meta">melewati batas waktu</p></article>
+</div>
+
+<section class="card-panel data-panel" aria-labelledby="token-list-title">
+  <div class="data-toolbar">
+    <nav class="filter-tabs" aria-label="Filter status token">
+      <a class="filter-tab{{if eq .Filter ""}} is-active{{end}}" href="/admin/tokens?election_id={{.Election.ID}}">Semua <span>{{.Stats.Total}}</span></a>
+      <a class="filter-tab{{if eq .Filter "UNUSED"}} is-active{{end}}" href="/admin/tokens?election_id={{.Election.ID}}&status=UNUSED">Tersedia <span>{{.Stats.Available}}</span></a>
+      <a class="filter-tab{{if eq .Filter "USED"}} is-active{{end}}" href="/admin/tokens?election_id={{.Election.ID}}&status=USED">Dipakai <span>{{.Stats.Used}}</span></a>
+      <a class="filter-tab{{if eq .Filter "REVOKED"}} is-active{{end}}" href="/admin/tokens?election_id={{.Election.ID}}&status=REVOKED">Dicabut <span>{{.Stats.Revoked}}</span></a>
+      <a class="filter-tab{{if eq .Filter "EXPIRED"}} is-active{{end}}" href="/admin/tokens?election_id={{.Election.ID}}&status=EXPIRED">Kedaluwarsa <span>{{.Stats.Expired}}</span></a>
+    </nav>
+    <div class="data-toolbar-actions">
+      <button class="btn btn-ghost btn-sm" type="button" data-revoke-selected disabled>Cabut terpilih</button>
+      <button class="btn btn-danger btn-sm" type="button" data-revoke-all{{if not .Stats.Available}} disabled{{end}}>Cabut semua tersedia</button>
+    </div>
+  </div>
+
+  {{if .Tokens.Tokens}}
+  <div class="table-wrap">
+    <table class="table token-table">
+      <caption class="sr-only">Daftar metadata token pemilih. Nilai token asli tidak ditampilkan.</caption>
+      <thead>
+        <tr>
+          <th class="check-col"><input type="checkbox" data-check-all aria-label="Pilih semua token di halaman ini"></th>
+          <th>ID token</th>
+          <th>Status</th>
+          <th>Dibuat</th>
+          <th>Kedaluwarsa</th>
+          <th>Dipakai</th>
+        </tr>
+      </thead>
+      <tbody>
+        {{range .Tokens.Tokens}}
+        <tr>
+          <td class="check-col"><input type="checkbox" value="{{.ID}}" data-token-check aria-label="Pilih token {{.ID}}"{{if ne .Status "UNUSED"}} disabled{{end}}></td>
+          <td class="mono token-id">#{{.ID}}</td>
+          <td>
+            <span class="badge badge-{{statusclass .Status}}">{{if eq .Status "UNUSED"}}Tersedia{{else if eq .Status "USED"}}Dipakai{{else if eq .Status "REVOKED"}}Dicabut{{else}}Kedaluwarsa{{end}}</span>
+          </td>
+          <td class="muted">{{shortdatetime .CreatedAt}}</td>
+          <td class="muted">{{if .ExpiresAt}}{{shortdatetime .ExpiresAt}}{{else}}Mengikuti periode{{end}}</td>
+          <td class="muted">{{if .UsedAt}}{{shortdatetime .UsedAt}}{{else}}-{{end}}</td>
+        </tr>
+        {{end}}
+      </tbody>
+    </table>
+  </div>
+
+  <div class="data-footer">
+    <p class="muted">Halaman {{.Tokens.Page}} dari {{.Tokens.Pages}} - {{.Tokens.Total}} token</p>
+    <nav class="pagination" aria-label="Navigasi halaman token">
+      {{if gt .Tokens.Page 1}}
+      <a href="/admin/tokens?election_id={{.Election.ID}}&status={{.Filter}}&page={{add .Tokens.Page -1}}" rel="prev">Sebelumnya</a>
+      {{else}}
+      <span class="is-disabled">Sebelumnya</span>
+      {{end}}
+      {{if lt .Tokens.Page .Tokens.Pages}}
+      <a href="/admin/tokens?election_id={{.Election.ID}}&status={{.Filter}}&page={{add .Tokens.Page 1}}" rel="next">Berikutnya</a>
+      {{else}}
+      <span class="is-disabled">Berikutnya</span>
+      {{end}}
+    </nav>
+  </div>
+  {{else}}
+  <div class="empty-state">
+    <span class="empty-mark" aria-hidden="true">0</span>
+    <strong>Belum ada token pada filter ini.</strong>
+    <p>Terbitkan token baru atau ubah filter status untuk melihat token lainnya.</p>
+    <button class="btn btn-primary btn-sm" type="button" data-token-generate>Terbitkan token</button>
+  </div>
+  {{end}}
+</section>
+
+<p class="security-note">
+  <svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 3 5 6v5c0 4.8 2.9 8.2 7 10 4.1-1.8 7-5.2 7-10V6l-7-3Z"/></svg>
+  Nilai token tidak disimpan dalam bentuk asli dan tidak dapat ditampilkan ulang. Ekspor tabel hanya berisi metadata.
+</p>
+
+<dialog id="token-dialog" class="app-dialog" aria-labelledby="token-dialog-title">
+  <form class="dialog-card" id="token-form">
+    <div class="dialog-head">
+      <div>
+        <p class="eyebrow">Terbitkan token</p>
+        <h2 id="token-dialog-title">Token pemilih baru</h2>
+      </div>
+      <button class="dialog-close" type="button" data-close-dialog aria-label="Tutup dialog"><svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8"><path d="m6 6 12 12M18 6 6 18"/></svg></button>
+    </div>
+    <input type="hidden" name="election_id" value="{{.Election.ID}}">
+    <div class="form-grid">
+      <div class="field">
+        <label for="token-count">Jumlah token</label>
+        <input class="input" id="token-count" name="count" type="number" min="1" max="1000" value="25" required inputmode="numeric">
+        <p class="field-hint">Antara 1 dan 1000 token per penerbitan.</p>
+      </div>
+      <div class="field">
+        <label for="token-expires">Kedaluwarsa <span class="field-hint">opsional</span></label>
+        <input class="input" id="token-expires" name="expires_at" type="datetime-local">
+        <p class="field-hint">Kosongkan untuk mengikuti waktu selesai pemilihan.</p>
+      </div>
+    </div>
+    <div class="alert alert-warning dialog-alert" role="note">Nilai token asli hanya ditampilkan sekali setelah dibuat. Simpan atau cetak daftar token sebelum menutup jendela berikutnya.</div>
+    <p class="form-message" id="token-form-error" role="alert" hidden></p>
+    <div class="dialog-actions">
+      <button class="btn btn-ghost" type="button" data-close-dialog>Batal</button>
+      <button class="btn btn-primary" type="submit" id="token-submit">Terbitkan token</button>
+    </div>
+  </form>
+</dialog>
+
+<dialog id="generated-dialog" class="app-dialog" aria-labelledby="generated-title">
+  <div class="dialog-card dialog-wide">
+    <div class="dialog-head">
+      <div>
+        <p class="eyebrow">Token berhasil dibuat</p>
+        <h2 id="generated-title">Simpan sekarang.</h2>
+      </div>
+    </div>
+    <p class="dialog-copy">Bagikan daftar berikut kepada pemilih. Setelah dialog ini ditutup, nilai token tidak dapat ditampilkan lagi.</p>
+    <div class="generated-summary">
+      <span><strong id="generated-count">0</strong> token</span>
+      <span>Berlaku hingga <strong id="generated-expiry">-</strong></span>
+    </div>
+    <div class="generated-tokens" id="generated-tokens" aria-live="polite"></div>
+    <p class="form-message is-success" role="status">Daftar ini hanya ada di layar Anda. Jangan muat ulang halaman sebelum menyimpannya.</p>
+    <div class="dialog-actions dialog-actions-wrap">
+      <button class="btn btn-ghost" type="button" data-copy-tokens>Salin semua</button>
+      <button class="btn btn-ghost" type="button" data-download-tokens>Unduh CSV</button>
+      <button class="btn btn-primary" type="button" data-complete-generation>Selesai &amp; muat ulang</button>
+    </div>
+  </div>
+</dialog>
+{{else}}
+<div class="empty-state empty-state-page">
+  <span class="empty-mark">01</span>
+  <strong>Belum ada periode pemilihan.</strong>
+  <p>Buat periode pemilihan terlebih dahulu sebelum menerbitkan token.</p>
+  <a class="btn btn-primary" href="/admin/elections">Buat periode pemilihan</a>
+</div>
+{{end}}
+{{end}}

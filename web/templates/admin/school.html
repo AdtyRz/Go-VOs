@@ -1,0 +1,137 @@
+{{define "content"}}
+<div class="page-head">
+  <div class="page-head-copy">
+    <p class="eyebrow">Identitas sekolah</p>
+    <h1 class="page-title">Rumah digital<br>yang dikenal siswa.</h1>
+    <p class="page-sub">Atur nama, logo, kontak, warna, dan tema visual. Perubahan langsung dipakai halaman siswa dan panel panitia.</p>
+  </div>
+  <div class="page-head-actions">
+    <a class="btn btn-ghost btn-sm" href="/" target="_blank" rel="noopener">Pratinjau halaman siswa</a>
+    <button class="btn btn-primary btn-sm" type="submit" form="school-form" id="school-save-top">Simpan perubahan</button>
+  </div>
+</div>
+
+<div class="school-layout">
+  <form class="school-form" id="school-form">
+    <section class="card-panel settings-section" aria-labelledby="identity-title">
+      <div class="section-heading">
+        <p class="eyebrow">Identitas</p>
+        <h2 id="identity-title">Profil sekolah</h2>
+        <p>Nama dan kontak ini tampil di halaman siswa serta laporan PDF.</p>
+      </div>
+      <div class="form-grid">
+        <div class="field full">
+          <label for="school-name">Nama sekolah</label>
+          <input class="input" id="school-name" name="name" type="text" required maxlength="160" value="{{.School.Name}}">
+        </div>
+        <div class="field full">
+          <label for="school-tagline">Tagline <span class="field-hint">opsional</span></label>
+          <input class="input" id="school-tagline" name="tagline" type="text" maxlength="200" value="{{.School.Tagline}}" placeholder="Satu kalimat tentang pemilihan atau sekolah.">
+        </div>
+        <div class="field full">
+          <label for="school-address">Alamat</label>
+          <input class="input" id="school-address" name="address" type="text" maxlength="255" value="{{.School.Address}}">
+        </div>
+        <div class="field">
+          <label for="school-email">Email</label>
+          <input class="input" id="school-email" name="email" type="email" maxlength="160" value="{{.School.Email}}">
+        </div>
+        <div class="field">
+          <label for="school-phone">Telepon</label>
+          <input class="input" id="school-phone" name="phone" type="text" maxlength="50" value="{{.School.Phone}}">
+        </div>
+        <div class="field full">
+          <label for="school-website">Website</label>
+          <input class="input" id="school-website" name="website" type="url" maxlength="255" value="{{.School.Website}}" placeholder="https://">
+        </div>
+        <div class="field full">
+          <label for="school-footer">Teks footer <span class="field-hint">opsional</span></label>
+          <textarea class="textarea" id="school-footer" name="footer_text" maxlength="500" rows="2" placeholder="Catatan singkat di bagian bawah halaman siswa.">{{.School.FooterText}}</textarea>
+        </div>
+      </div>
+    </section>
+
+    <section class="card-panel settings-section" aria-labelledby="theme-title">
+      <div class="section-heading">
+        <p class="eyebrow">Tema visual</p>
+        <h2 id="theme-title">Pilih karakter halaman</h2>
+        <p>Setiap tema mengubah tipografi, permukaan, ornamen, dan ritme layout, bukan sekadar warna.</p>
+      </div>
+      <div class="theme-grid">
+        {{range .Themes}}
+        <label class="theme-card theme-card-{{.}}">
+          <input type="radio" name="theme" value="{{.}}"{{if eq . $.School.Theme}} checked{{end}}>
+          <span class="theme-preview theme-preview-{{.}}" aria-hidden="true"><i></i><i></i><i></i></span>
+          <span class="theme-card-text">
+            <strong>{{themelabel .}}</strong>
+            <span>{{if eq . "batik"}}Hangat, artisan, penuh motif kawung dan parang.{{else if eq . "indonesia"}}Poster nasionalis, tegas, merah-putih.{{else if eq . "wayang"}}Teatrikal, gelap, dengan emas dan siluet gunungan.{{else}}Bening, dingin, dan lapang dengan permukaan kaca.{{end}}</span>
+          </span>
+        </label>
+        {{end}}
+      </div>
+    </section>
+
+    <section class="card-panel settings-section" aria-labelledby="color-title">
+      <div class="section-heading">
+        <p class="eyebrow">Warna</p>
+        <h2 id="color-title">Palet sekolah</h2>
+        <p>Warna utama dipakai untuk tombol dan penanda penting. Pastikan kontras tetap nyaman dibaca.</p>
+      </div>
+      <div class="color-grid">
+        <label class="color-field" for="school-primary">
+          <span>Warna utama</span>
+          <span class="color-control">
+            <input type="color" id="school-primary" name="primary_color" value="{{.School.PrimaryColor}}">
+            <output for="school-primary" data-color-output="school-primary">{{.School.PrimaryColor}}</output>
+          </span>
+        </label>
+        <label class="color-field" for="school-secondary">
+          <span>Warna sekunder</span>
+          <span class="color-control">
+            <input type="color" id="school-secondary" name="secondary_color" value="{{.School.SecondaryColor}}">
+            <output for="school-secondary" data-color-output="school-secondary">{{.School.SecondaryColor}}</output>
+          </span>
+        </label>
+      </div>
+      <p class="field-hint">Gunakan format hex enam digit. Warna sekunder dipakai untuk aksen, garis, dan ornamen tema.</p>
+    </section>
+
+    <p class="form-message" id="school-form-error" role="alert" hidden></p>
+    <div class="form-actions">
+      <p class="muted">Menyimpan perubahan akan memuat ulang panel agar tema baru langsung diterapkan.</p>
+      <button class="btn btn-primary" type="submit" id="school-save">Simpan perubahan</button>
+    </div>
+  </form>
+
+  <aside class="school-side">
+    <section class="card-panel logo-panel" aria-labelledby="logo-title">
+      <div class="section-heading">
+        <p class="eyebrow">Logo</p>
+        <h2 id="logo-title">Tanda sekolah</h2>
+        <p>Gunakan gambar persegi dengan latar transparan bila tersedia.</p>
+      </div>
+      <div class="logo-preview" id="school-logo-preview">
+        {{if .School.LogoPath}}
+        <img src="{{.School.LogoPath}}" alt="Logo {{.School.Name}}" width="120" height="120" data-logo-img>
+        {{else}}
+        <span data-logo-fallback>{{initials .School.Name}}</span>
+        {{end}}
+      </div>
+      <label class="btn btn-ghost btn-sm btn-block file-button" for="school-logo-file">Pilih logo
+        <input class="sr-only" id="school-logo-file" name="logo" type="file" accept="image/jpeg,image/png,image/webp">
+      </label>
+      <button class="btn btn-quiet btn-sm btn-block" type="button" data-logo-upload disabled>Unggah logo</button>
+      <button class="btn btn-danger btn-sm btn-block" type="button" data-logo-remove{{if not .School.LogoPath}} hidden{{end}}>Hapus logo</button>
+      <p class="field-hint">JPG, PNG, atau WebP - maks. 3 MB. Logo akan diperkecil otomatis.</p>
+      <p class="form-message" id="logo-form-error" role="alert" hidden></p>
+    </section>
+
+    <section class="card-panel school-note" aria-labelledby="preview-note-title">
+      <p class="eyebrow">Catatan</p>
+      <h2 id="preview-note-title">Tema di kedua sisi</h2>
+      <p>Tema yang sama dipakai halaman siswa, panel panitia, dan halaman login. Tema gelap Wayang tetap menjaga kontras teks dan fokus.</p>
+      <a class="btn btn-ghost btn-sm btn-block" href="/" target="_blank" rel="noopener">Buka halaman siswa</a>
+    </section>
+  </aside>
+</div>
+{{end}}

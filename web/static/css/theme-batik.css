@@ -1,0 +1,572 @@
+body.theme-batik {
+  --font-display: "Fraunces", "Georgia", serif;
+  --font-body: "DM Sans", "Segoe UI", system-ui, sans-serif;
+
+  --bg: #f2e9d9;
+  --bg-deep: #e8dac3;
+  --surface: #fffaf0;
+  --surface-raised: #fffdf7;
+  --surface-muted: #f4ebdb;
+  --ink: #2a1e15;
+  --ink-soft: #4d3a29;
+  --muted: #77634e;
+  --faint: #a08b72;
+  --line: rgba(73, 49, 27, 0.16);
+  --line-strong: rgba(73, 49, 27, 0.38);
+
+  --brand-tint: #f6ecdc;
+  --brand-soft: #e8d5b7;
+  --brand-text: color-mix(in srgb, var(--brand-primary) 82%, #2a1e15);
+
+  --radius-xs: 1px;
+  --radius-sm: 3px;
+  --radius-md: 6px;
+  --radius-lg: 14px;
+
+  --shadow-sm: 0 2px 0 rgba(73, 49, 27, 0.06), 0 8px 20px rgba(73, 49, 27, 0.06);
+  --shadow-md: 10px 12px 0 rgba(73, 49, 27, 0.07), 0 24px 50px rgba(73, 49, 27, 0.12);
+  --shadow-lg: 18px 20px 0 rgba(73, 49, 27, 0.08), 0 40px 80px rgba(73, 49, 27, 0.18);
+
+  --batik-copper: #9a5b2d;
+  --batik-deep: #332216;
+  --batik-cream: #f7ecd8;
+  color-scheme: light;
+}
+
+.theme-batik .theme-atmosphere {
+  background:
+    radial-gradient(circle at 4% 10%, color-mix(in srgb, var(--brand-secondary) 12%, transparent), transparent 32%),
+    radial-gradient(circle at 92% 84%, color-mix(in srgb, var(--brand-primary) 9%, transparent), transparent 34%),
+    linear-gradient(180deg, #f5ecdd, #efe3d0);
+}
+
+.theme-batik .atmo-pattern {
+  position: absolute;
+  inset: 0;
+  opacity: 0.5;
+  background-image:
+    radial-gradient(circle at 50% 50%, transparent 0 9px, rgba(112, 72, 35, 0.12) 10px 11px, transparent 12px),
+    radial-gradient(circle at 50% 50%, transparent 0 19px, rgba(112, 72, 35, 0.08) 20px 21px, transparent 22px),
+    linear-gradient(45deg, transparent 48%, rgba(112, 72, 35, 0.035) 49% 51%, transparent 52%);
+  background-size: 48px 48px, 96px 96px, 24px 24px;
+  mask-image: radial-gradient(ellipse at center, transparent 18%, #000 72%);
+  -webkit-mask-image: radial-gradient(ellipse at center, transparent 18%, #000 72%);
+}
+
+.theme-batik .atmo-glow {
+  position: absolute;
+  inset: auto -8vw -20vh -8vw;
+  height: 52vh;
+  background: radial-gradient(ellipse at 50% 100%, rgba(154, 91, 45, 0.16), transparent 65%);
+}
+
+.theme-batik .atmo-frame {
+  position: absolute;
+  inset: 12px;
+  border: 1px solid rgba(73, 49, 27, 0.22);
+  box-shadow: inset 0 0 0 4px transparent, inset 0 0 0 5px rgba(73, 49, 27, 0.12);
+  pointer-events: none;
+}
+
+.theme-batik .atmo-frame::before,
+.theme-batik .atmo-frame::after {
+  content: "";
+  position: absolute;
+  width: 52px;
+  height: 52px;
+  border-color: rgba(73, 49, 27, 0.3);
+  border-style: solid;
+}
+
+.theme-batik .atmo-frame::before {
+  top: -1px;
+  left: -1px;
+  border-width: 2px 0 0 2px;
+}
+
+.theme-batik .atmo-frame::after {
+  right: -1px;
+  bottom: -1px;
+  border-width: 0 2px 2px 0;
+}
+
+.theme-batik h1,
+.theme-batik h2,
+.theme-batik .page-title {
+  font-variation-settings: "SOFT" 40, "WONK" 1;
+}
+
+.theme-batik .eyebrow {
+  font-size: 0.66rem;
+  letter-spacing: 0.22em;
+}
+
+.theme-batik .eyebrow::before {
+  width: 2.4em;
+  background: var(--batik-copper);
+  opacity: 0.75;
+}
+
+.theme-batik .hero-title {
+  letter-spacing: -0.045em;
+  line-height: 0.88;
+}
+
+.theme-batik .hero-title .accent {
+  position: relative;
+  display: inline-block;
+  color: var(--batik-copper);
+  font-style: italic;
+}
+
+.theme-batik .hero-title .accent::after {
+  content: "";
+  position: absolute;
+  right: 0.06em;
+  bottom: -0.08em;
+  left: 0.04em;
+  height: 0.09em;
+  background:
+    radial-gradient(circle at 4px 50%, var(--batik-copper) 0 2px, transparent 2.5px) 0 0 / 12px 100% repeat-x;
+  opacity: 0.65;
+}
+
+.theme-batik .hero-lede {
+  border-left: 3px double var(--batik-copper);
+  font-family: "Fraunces", Georgia, serif;
+  font-size: clamp(1rem, 1.6vw, 1.12rem);
+  font-style: italic;
+  line-height: 1.6;
+}
+
+.theme-batik .hero-fact dd,
+.theme-batik .stat-value,
+.theme-batik .panel-title,
+.theme-batik .dialog-head h2 {
+  font-family: "Fraunces", Georgia, serif;
+}
+
+.theme-batik .site-topbar {
+  position: relative;
+  padding-block: clamp(1.2rem, 2.4vw, 1.8rem);
+  border-bottom: 1px solid var(--line);
+}
+
+.theme-batik .site-topbar::after {
+  content: "";
+  position: absolute;
+  right: var(--gutter);
+  bottom: 4px;
+  left: var(--gutter);
+  height: 1px;
+  background: var(--line);
+}
+
+.theme-batik .site-brand .logo-mark {
+  border-radius: 50%;
+  border: 1px solid var(--batik-copper);
+  box-shadow: 0 0 0 3px var(--bg), 0 0 0 4px var(--line);
+  background: var(--surface);
+  color: var(--batik-copper);
+}
+
+.theme-batik .site-brand-text strong {
+  font-family: "Fraunces", Georgia, serif;
+  font-size: 1.08rem;
+}
+
+.theme-batik .site-brand-text span {
+  letter-spacing: 0.2em;
+}
+
+.theme-batik .topbar-context {
+  color: var(--batik-copper);
+}
+
+.theme-batik .topbar-context::before {
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--batik-copper));
+}
+
+.theme-batik .home-main {
+  padding-top: clamp(2.4rem, 6vw, 5.2rem);
+}
+
+.theme-batik .hero {
+  padding-left: clamp(0px, 2vw, 22px);
+}
+
+.theme-batik .hero::before {
+  content: "KAWUNG";
+  position: absolute;
+  top: -1.4rem;
+  left: 0;
+  color: var(--faint);
+  font-size: 0.54rem;
+  font-weight: 700;
+  letter-spacing: 0.34em;
+}
+
+.theme-batik .access-panel {
+  overflow: hidden;
+  border: 1px solid var(--batik-deep);
+  border-radius: 2px;
+  background:
+    linear-gradient(135deg, rgba(154, 91, 45, 0.05), transparent 40%),
+    var(--surface);
+  box-shadow: var(--shadow-md);
+}
+
+.theme-batik .access-panel::before {
+  inset: 7px;
+  border: 1px solid rgba(73, 49, 27, 0.2);
+  border-radius: 0;
+}
+
+.theme-batik .access-panel::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 86px;
+  height: 86px;
+  background:
+    radial-gradient(circle at 100% 0, transparent 0 27px, rgba(154, 91, 45, 0.22) 28px 29px, transparent 30px),
+    radial-gradient(circle at 100% 0, transparent 0 41px, rgba(154, 91, 45, 0.14) 42px 43px, transparent 44px);
+  pointer-events: none;
+}
+
+.theme-batik .panel-kicker {
+  border-bottom: 1px solid var(--line);
+}
+
+.theme-batik .panel-kicker span {
+  color: var(--batik-copper);
+}
+
+.theme-batik .access-panel h2 {
+  margin-top: 1.2rem;
+  font-family: "Fraunces", Georgia, serif;
+  font-size: clamp(1.8rem, 2.8vw, 2.4rem);
+  font-weight: 500;
+  line-height: 1.08;
+  letter-spacing: -0.03em;
+}
+
+.theme-batik .token-input {
+  border: 1px solid var(--batik-deep);
+  border-radius: 1px;
+  background: var(--surface-muted);
+  box-shadow: inset 0 2px 0 rgba(73, 49, 27, 0.06);
+  font-family: "Fraunces", Georgia, serif;
+}
+
+.theme-batik .token-input:focus {
+  border-color: var(--batik-copper);
+  box-shadow: inset 0 2px 0 rgba(73, 49, 27, 0.06), 0 0 0 3px rgba(154, 91, 45, 0.18);
+}
+
+.theme-batik .access-form .btn-primary,
+.theme-batik .choose-btn,
+.theme-batik .success-ticket .btn-primary {
+  border-radius: 1px;
+  background: var(--batik-deep);
+  border-color: var(--batik-deep);
+  color: var(--batik-cream);
+  font-family: "Fraunces", Georgia, serif;
+  font-size: 0.9rem;
+  letter-spacing: 0.02em;
+  box-shadow: 4px 4px 0 rgba(154, 91, 45, 0.35);
+}
+
+.theme-batik .access-form .btn-primary:hover,
+.theme-batik .choose-btn:hover {
+  background: var(--batik-copper);
+  border-color: var(--batik-copper);
+  transform: translate(-1px, -1px);
+  box-shadow: 6px 6px 0 rgba(154, 91, 45, 0.3);
+}
+
+.theme-batik .home-strip {
+  border-top: 3px double var(--line-strong);
+  border-bottom: 3px double var(--line-strong);
+  background:
+    radial-gradient(circle at 14px 14px, rgba(112, 72, 35, 0.08) 0 2px, transparent 2.5px) 0 0 / 28px 28px,
+    var(--surface-muted);
+}
+
+.theme-batik .step-item {
+  border-left: 1px solid var(--line-strong);
+}
+
+.theme-batik .step-item .step-no {
+  color: var(--batik-copper);
+  font-style: italic;
+}
+
+.theme-batik .candidate-row {
+  border-radius: 2px;
+  border-color: var(--line-strong);
+  background:
+    linear-gradient(90deg, rgba(154, 91, 45, 0.045), transparent 22%),
+    var(--surface);
+}
+
+.theme-batik .candidate-index {
+  border-right: 3px double var(--line-strong);
+}
+
+.theme-batik .candidate-index strong {
+  color: var(--batik-copper);
+  font-style: italic;
+}
+
+.theme-batik .ballot-head {
+  border-bottom: 3px double var(--line-strong);
+}
+
+.theme-batik .success-ticket {
+  border: 1px solid var(--batik-deep);
+  border-radius: 2px;
+  background:
+    radial-gradient(circle at 50% 0, color-mix(in srgb, var(--brand-secondary) 13%, transparent), transparent 42%),
+    var(--surface);
+  box-shadow: var(--shadow-md);
+}
+
+.theme-batik .success-stamp {
+  border-radius: 1px;
+  border-color: var(--batik-copper);
+  color: var(--batik-copper);
+  font-family: "Fraunces", Georgia, serif;
+}
+
+.theme-batik .site-footer {
+  background: var(--batik-deep);
+  color: var(--batik-cream);
+  border-top: 0;
+}
+
+.theme-batik .site-footer .logo-mark {
+  border-color: rgba(247, 236, 216, 0.32);
+  color: var(--batik-cream);
+}
+
+.theme-batik .footer-brand strong,
+.theme-batik .footer-meta strong {
+  color: var(--batik-cream);
+  font-family: "Fraunces", Georgia, serif;
+}
+
+.theme-batik .footer-brand span,
+.theme-batik .footer-contact,
+.theme-batik .footer-meta {
+  color: rgba(247, 236, 216, 0.62);
+}
+
+.theme-batik .footer-meta a {
+  color: var(--batik-cream);
+}
+
+.theme-batik.admin-shell {
+  --admin-rail-bg: #2b1c12;
+  --admin-rail-ink: #f7ecd8;
+  --admin-rail-muted: rgba(247, 236, 216, 0.56);
+  --admin-rail-line: rgba(247, 236, 216, 0.13);
+  --admin-rail-active: rgba(247, 236, 216, 0.09);
+  --hero-surface: #3a281b;
+  --hero-ink: #fbf3e4;
+}
+
+.theme-batik .admin-sidebar {
+  background:
+    radial-gradient(circle at 6% 2%, rgba(201, 162, 39, 0.16), transparent 34%),
+    radial-gradient(circle at 50% 58%, rgba(247, 236, 216, 0.035) 0 2px, transparent 2.5px) 0 0 / 30px 30px,
+    linear-gradient(180deg, #352417, #22160e);
+  border-right: 1px solid rgba(247, 236, 216, 0.08);
+}
+
+.theme-batik .admin-brand {
+  border-bottom: 1px solid var(--admin-rail-line);
+}
+
+.theme-batik .admin-brand .logo-mark {
+  border-radius: 50%;
+  border-color: rgba(247, 236, 216, 0.28);
+  box-shadow: 0 0 0 3px rgba(247, 236, 216, 0.04);
+}
+
+.theme-batik .admin-brand-text strong {
+  font-family: "Fraunces", Georgia, serif;
+  font-size: 1.04rem;
+}
+
+.theme-batik .nav-link {
+  border-radius: 2px;
+}
+
+.theme-batik .nav-link.is-active::before {
+  width: 4px;
+  background: var(--batik-copper);
+  box-shadow: 0 0 0 1px rgba(247, 236, 216, 0.15);
+}
+
+.theme-batik .admin-topbar {
+  border-bottom: 3px double var(--line-strong);
+  background: color-mix(in srgb, var(--bg) 88%, transparent);
+  backdrop-filter: blur(6px);
+}
+
+.theme-batik .admin-main {
+  background:
+    linear-gradient(90deg, rgba(73, 49, 27, 0.025) 1px, transparent 1px) 0 0 / 56px 56px,
+    var(--bg);
+}
+
+.theme-batik .page-head {
+  border-bottom: 1px solid var(--line);
+  padding-bottom: 1.2rem;
+}
+
+.theme-batik .page-title {
+  font-weight: 500;
+  letter-spacing: -0.04em;
+}
+
+.theme-batik .page-head-copy .eyebrow {
+  color: var(--batik-copper);
+}
+
+.theme-batik .stat-card {
+  border-radius: 2px;
+  border-color: var(--line-strong);
+  box-shadow: 4px 5px 0 rgba(73, 49, 27, 0.05);
+}
+
+.theme-batik .stat-card-primary {
+  background:
+    linear-gradient(135deg, rgba(201, 162, 39, 0.16), transparent 48%),
+    var(--hero-surface);
+  color: var(--hero-ink);
+  border-color: var(--batik-copper);
+}
+
+.theme-batik .stat-card-primary .stat-label,
+.theme-batik .stat-card-primary .stat-meta {
+  color: rgba(251, 243, 228, 0.62);
+}
+
+.theme-batik .card-panel {
+  border-radius: 2px;
+  border-color: var(--line);
+  box-shadow: 5px 6px 0 rgba(73, 49, 27, 0.04);
+}
+
+.theme-batik .panel-head {
+  border-bottom-color: var(--line-strong);
+}
+
+.theme-batik .data-panel .table th {
+  border-bottom: 3px double var(--line-strong);
+}
+
+.theme-batik .data-toolbar {
+  border-bottom: 1px solid var(--line-strong);
+}
+
+.theme-batik .filter-tab.is-active {
+  border-color: var(--batik-deep);
+  background: var(--batik-deep);
+  color: var(--batik-cream);
+}
+
+.theme-batik .dialog-card {
+  border-radius: 2px;
+  border: 1px solid var(--batik-deep);
+  background:
+    linear-gradient(135deg, rgba(154, 91, 45, 0.05), transparent 30%),
+    var(--surface);
+  box-shadow: var(--shadow-lg);
+}
+
+.theme-batik .btn {
+  border-radius: 1px;
+}
+
+.theme-batik .btn-primary {
+  box-shadow: 3px 3px 0 rgba(73, 49, 27, 0.16);
+}
+
+.theme-batik .btn-primary:hover {
+  transform: translate(-1px, -1px);
+  box-shadow: 4px 4px 0 rgba(73, 49, 27, 0.14);
+}
+
+.theme-batik .result-bar progress {
+  height: 12px;
+  background: transparent;
+}
+
+.theme-batik .result-bar progress::-webkit-progress-bar {
+  background: repeating-linear-gradient(90deg, var(--brand-tint) 0 10px, var(--surface-muted) 10px 12px);
+}
+
+.theme-batik .result-bar progress::-webkit-progress-value {
+  background: linear-gradient(90deg, var(--batik-copper), var(--brand-secondary));
+}
+
+.theme-batik .result-bar progress::-moz-progress-bar {
+  background: linear-gradient(90deg, var(--batik-copper), var(--brand-secondary));
+}
+
+.theme-batik.auth-shell {
+  --hero-ink: #fbf3e4;
+}
+
+.theme-batik .auth-brand {
+  background:
+    radial-gradient(circle at 12% 8%, rgba(201, 162, 39, 0.18), transparent 32%),
+    radial-gradient(circle at 52% 70%, rgba(247, 236, 216, 0.045) 0 2px, transparent 2.5px) 0 0 / 32px 32px,
+    linear-gradient(160deg, #372518, #1f140d);
+}
+
+.theme-batik .auth-brand::after {
+  border-radius: 0;
+  border-color: rgba(247, 236, 216, 0.12);
+  transform: rotate(45deg);
+  box-shadow: 0 0 0 34px rgba(247, 236, 216, 0.018), 0 0 0 68px rgba(247, 236, 216, 0.012);
+}
+
+.theme-batik .auth-brand-copy h1 {
+  font-weight: 500;
+  letter-spacing: -0.04em;
+}
+
+.theme-batik .auth-panel {
+  background:
+    radial-gradient(circle at 100% 0, rgba(201, 162, 39, 0.1), transparent 36%),
+    var(--bg);
+}
+
+.theme-batik .auth-card {
+  padding: clamp(1.4rem, 3vw, 2.2rem);
+  border: 1px solid var(--line-strong);
+  background: var(--surface);
+  box-shadow: 8px 9px 0 rgba(73, 49, 27, 0.06);
+}
+
+.theme-batik .auth-card-head h2 {
+  font-weight: 500;
+}
+
+@media (max-width: 760px) {
+  .theme-batik .atmo-frame {
+    inset: 7px;
+  }
+  .theme-batik .hero::before {
+    display: none;
+  }
+  .theme-batik .site-footer {
+    border-top: 3px double var(--line-strong);
+  }
+}

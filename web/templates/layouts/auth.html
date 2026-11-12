@@ -1,0 +1,49 @@
+{{define "layout"}}<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light">
+  <meta name="theme-color" content="{{if .School}}{{.School.PrimaryColor}}{{else}}#7a4f2a{{end}}">
+  <meta name="csrf-token" content="{{.CSRF}}">
+  <meta name="robots" content="noindex, nofollow">
+  <title>{{.Title}}{{with .School}} - {{.Name}}{{end}}</title>
+  <link rel="icon" href="/static/images/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="/static/css/base.css">
+  <link rel="stylesheet" href="/static/css/admin.css">
+  {{with .School}}<link rel="stylesheet" href="/static/css/theme-{{.Theme}}.css">{{end}}
+  <link rel="stylesheet" href="/theme.css">
+  <script defer src="/static/js/login.js"></script>
+</head>
+<body class="auth-shell{{with .School}} theme-{{.Theme}}{{end}}" data-page="login" data-csrf="{{.CSRF}}">
+  <a class="skip-link" href="#login-main">Langsung ke formulir masuk</a>
+  <div class="auth-atmosphere" aria-hidden="true"><span></span><span></span><span></span></div>
+
+  <main class="auth-frame" id="login-main">
+    <section class="auth-brand">
+      <div class="auth-brand-top">
+        <span class="logo-mark">
+          {{if .School.LogoPath}}<img src="{{.School.LogoPath}}" alt="" width="48" height="48">{{else}}{{initials .School.Name}}{{end}}
+        </span>
+        <span class="auth-brand-label">Panel Panitia<br>{{.CurrentYear}}</span>
+      </div>
+
+      <div class="auth-brand-copy">
+        <p class="eyebrow">Ruang kerja pemilihan</p>
+        <h1>Suara siswa<br>dijaga dari sini.</h1>
+        <p>Kelola pasangan calon, terbitkan token, dan pantau hasil tanpa pernah menyentuh identitas pemilih.</p>
+      </div>
+
+      <footer class="auth-brand-foot">
+        <strong>{{with .School}}{{.Name}}{{end}}</strong>
+        <span>{{with .School}}{{if .Address}}{{.Address}}{{else}}Penyelenggara pemilihan OSIS.{{end}}{{end}}</span>
+      </footer>
+    </section>
+
+    <section class="auth-panel">
+      {{template "content" .}}
+      <p class="auth-foot">Hak cipta {{.CurrentYear}} {{with .School}}{{.Name}}{{end}} - <a href="/">Kembali ke halaman siswa</a></p>
+    </section>
+  </main>
+</body>
+</html>{{end}}

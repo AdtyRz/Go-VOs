@@ -1,0 +1,38 @@
+{{define "content"}}
+<div class="auth-card">
+  <div class="auth-card-head">
+    <p class="eyebrow">Akses terbatas</p>
+    <h2>Masuk ke panel panitia.</h2>
+    <p>Gunakan akun yang diberikan penyelenggara. Setiap aktivitas penting akan dicatat di jejak audit.</p>
+  </div>
+
+  <p class="form-message" id="login-error" role="alert" hidden></p>
+
+  <form class="auth-form" id="login-form" autocomplete="on">
+    <div class="field">
+      <label for="login-username">Username atau email</label>
+      <input class="input" id="login-username" name="login" type="text" autocomplete="username" autocapitalize="none" spellcheck="false" required maxlength="160" placeholder="mis. panitia.osis">
+    </div>
+    <div class="field">
+      <label for="login-password">Password</label>
+      <span class="password-field">
+        <input class="input" id="login-password" name="password" type="password" autocomplete="current-password" required maxlength="512" placeholder="Masukkan password">
+        <button class="password-toggle" type="button" data-toggle-password aria-controls="login-password" aria-pressed="false">
+          <span data-password-label>Tampilkan</span>
+        </button>
+      </span>
+    </div>
+    <button class="btn btn-primary btn-lg btn-block" type="submit" id="login-submit">Masuk ke panel</button>
+  </form>
+
+  <div class="auth-security">
+    <svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 3 5 6v5c0 4.8 2.9 8.2 7 10 4.1-1.8 7-5.2 7-10V6l-7-3Z"/><path d="M9.5 11.5V10a2.5 2.5 0 0 1 5 0v1.5"/><rect x="8.5" y="11.5" width="7" height="5" rx="1"/></svg>
+    <p>Sesi berakhir otomatis. Jangan masuk melalui jaringan publik atau perangkat bersama.</p>
+  </div>
+
+  <div class="auth-links">
+    <a href="/">Kembali ke halaman siswa</a>
+    <span>Butuh akses? Hubungi superadmin sekolah.</span>
+  </div>
+</div>
+{{end}}
